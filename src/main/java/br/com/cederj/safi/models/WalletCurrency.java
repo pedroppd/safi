@@ -1,13 +1,18 @@
 package br.com.cederj.safi.models;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "wallet_currency")
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public class WalletCurrency {
 
     @Id

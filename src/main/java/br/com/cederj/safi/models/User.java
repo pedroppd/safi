@@ -1,12 +1,17 @@
 package br.com.cederj.safi.models;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
 @Table(name = "Users")
+@NoArgsConstructor
+@Getter
+@Setter
 public class User {
 
     @Id
