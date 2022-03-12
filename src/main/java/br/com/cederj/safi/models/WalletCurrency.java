@@ -20,11 +20,11 @@ public class WalletCurrency {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "currency_id")
     private Currency currency;
 
     private BigDecimal quantity;

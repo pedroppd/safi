@@ -1,0 +1,18 @@
+#Database configuration
+spring:
+  datasource:
+    url: jdbc:sqlserver://safidb.database.windows.net;databaseName=SafiDB
+    username: SafiAdmin
+    password: Cederj123
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+##Jpa configuration
+  jpa:
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.SQLServer2012Dialect
+      ddl-auto:  update
+
+safi:
+  jwt: safi-project
+  expiration: 86400000
