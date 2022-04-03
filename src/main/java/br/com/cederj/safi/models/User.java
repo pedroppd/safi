@@ -1,5 +1,6 @@
 package br.com.cederj.safi.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,6 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "Users")
-@NoArgsConstructor
 @Getter
 @Setter
 public class User implements UserDetails {
@@ -24,9 +24,24 @@ public class User implements UserDetails {
 
     private String lastName;
 
+    @Column
     private String email;
 
     private String password;
+
+    @Column(length = 65, updatable = false)
+    private String verificationCode;
+
+    public User() {
+
+    }
+
+    public User(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

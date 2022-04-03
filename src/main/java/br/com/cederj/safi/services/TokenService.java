@@ -1,4 +1,4 @@
-package br.com.cederj.safi.configuration.security;
+package br.com.cederj.safi.services;
 
 import br.com.cederj.safi.models.User;
 import io.jsonwebtoken.Jwts;
@@ -27,12 +27,12 @@ public class TokenService {
         }
     }
 
-    public String generateTokenJwt(Authentication authentication){
+    public String generateTokenJwt(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Date today = new Date();
         Date expirationDate = new Date(today.getTime() + Long.parseLong(expiration));
         return Jwts.builder()
-                .setIssuer("api-forum")
+                .setIssuer("safi-api")
                 .setSubject(user.getId().toString())
                 .setIssuedAt(today)
                 .setExpiration(expirationDate)

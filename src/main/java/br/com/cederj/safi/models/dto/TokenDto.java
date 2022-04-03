@@ -1,6 +1,5 @@
 package br.com.cederj.safi.models.dto;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

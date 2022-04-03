@@ -1,6 +1,6 @@
 package br.com.cederj.safi.controller;
 
-import br.com.cederj.safi.configuration.security.TokenService;
+import br.com.cederj.safi.services.TokenService;
 import br.com.cederj.safi.models.dto.TokenDto;
 import br.com.cederj.safi.models.form.AuthForm;
 import lombok.extern.slf4j.Slf4j;
