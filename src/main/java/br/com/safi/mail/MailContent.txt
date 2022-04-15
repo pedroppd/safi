@@ -1,0 +1,2 @@
+"Querido %s,<br> Por favor, clique no link abaixo para verificar seu cadastro:<br>" +
+"<h3><a href="%s" target="_blank">VERIFICAR CADASTRO !</a></h3>Obrigado,<br> SAFI company"

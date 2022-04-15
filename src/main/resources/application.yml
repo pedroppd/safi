@@ -22,6 +22,17 @@ spring:
     port: 587
     username: pedro_pdantas@hotmail.com
     password: 123456
+    verify:
+      email: http://safi-finance/email/verify
+    subject:
+      content: Por favor, verifique seu cadastro.
+    recipient:
+      address: pedro_pdantas@hotmail.com
+    sender:
+      address: pedro_pdantas@hotmail.com
+      name: SAFI
+    content:
+      path: ./src/main/java/br/com/safi/mail/MailContent.txt
     properties:
       mail:
         smtp:
