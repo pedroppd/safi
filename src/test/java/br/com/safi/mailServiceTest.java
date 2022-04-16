@@ -19,7 +19,7 @@ public class mailServiceTest {
 
 	@Test
 	void buildMailBody() throws IOException {
-		String userName = "Pedro Dantas";
+		String userName = "Fulano";
 		String targetLink = "https://www.google.com/";
 		String content = this.mailService.buildEmailBody(userName, targetLink);
 		boolean isValid = content.contains(userName) && content.contains(targetLink);

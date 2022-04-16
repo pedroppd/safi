@@ -32,7 +32,8 @@ public class User implements UserDetails {
     @Column(length = 65, updatable = false)
     private String verificationCode;
 
-    private boolean isEnabled;
+    @Column(name = "enabled")
+    private boolean enabled;
 
     public User() {
 
@@ -72,7 +73,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
     public UserDto converter() {

@@ -22,7 +22,7 @@ public class TokenService {
         try {
             Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
             return true;
-        }catch (Exception ex){
+        }catch (Exception ex) {
             return false;
         }
     }

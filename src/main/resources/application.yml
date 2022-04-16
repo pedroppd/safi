@@ -1,4 +1,7 @@
 #Database configuration
+server:
+  servlet:
+    context-path: /safi-finance/api
 spring:
   datasource:
     url: jdbc:sqlserver://safidb.database.windows.net;databaseName=SafiDB
@@ -10,7 +13,7 @@ spring:
     show-sql: true
     hibernate:
       dialect: org.hibernate.dialect.SQLServer2012Dialect
-      ddl-auto:  update
+      ddl-auto: update
 
   safi:
     jwt:
@@ -20,10 +23,10 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: pedro_pdantas@hotmail.com
-    password: 123456
+    username: pedroppd90@gmail.com
+    password: Thugstools@11515
     verify:
-      email: http://safi-finance/email/verify
+      email: http://localhost:8080/safi-finance/api/email/verify
     subject:
       content: Por favor, verifique seu cadastro.
     recipient:
@@ -39,12 +42,3 @@ spring:
           auth: true
           starttls:
             enable: true
-
-
-
- ## spring.mail.host=smtp.gmail.com
- ## spring.mail.port=587
- ## spring.mail.username=your_email_address
- ## spring.mail.password=your_email_password
- ## spring.mail.properties.mail.smtp.auth=true
- ## spring.mail.properties.mail.smtp.starttls.enable=true

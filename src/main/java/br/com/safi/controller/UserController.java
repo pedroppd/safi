@@ -18,7 +18,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j

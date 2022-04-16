@@ -1,6 +1,8 @@
 package br.com.safi.services;
 
 import br.com.safi.models.User;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,20 +38,22 @@ public class MailService {
     @Value("${spring.mail.verify.email}")
     private String verifyEmailUrl;
 
-    @Autowired
-    private JavaMailSender mailSender;
 
-    @Async
+
+    @Autowired
+    private JavaMailSender sender;
+
     public void sendVerificationEmail(User user) throws MessagingException, IOException {
-        String content = this.buildEmailBody(user.getEmail(), verifyEmailUrl + "?code=" + user.getVerificationCode());
-        MimeMessage message = mailSender.createMimeMessage();
+        String verifyUrl = verifyEmailUrl + "?code=" + user.getVerificationCode();
+        String content = this.buildEmailBody(user.getEmail(), verifyUrl);
+        MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         helper.setFrom(fromAddress, senderName);
-        helper.setTo(toAddress);
+        helper.setTo(user.getEmail());
         helper.setSubject(subject);
         helper.setText(content, true);
-        mailSender.send(message);
+        sender.send(message);
     }
 
     public String buildEmailBody(String userName, String targetLink) throws IOException {
