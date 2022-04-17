@@ -1,3 +1,9 @@
+
+safi:
+  jwt:
+    expiration: 86400000
+    secret: safi-project
+
 #Database configuration
 server:
   servlet:
@@ -14,11 +20,6 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.SQLServer2012Dialect
       ddl-auto: update
-
-  safi:
-    jwt:
-      expiration: 86400000
-      secret: safi-project
 
   mail:
     host: smtp.gmail.com

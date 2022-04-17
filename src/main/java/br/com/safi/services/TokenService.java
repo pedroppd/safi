@@ -12,10 +12,10 @@ import java.util.Date;
 @Service
 public class TokenService {
 
-    @Value("${safi:jwt:expiration}")
+    @Value("${safi.jwt.expiration}")
     private String expiration;
 
-    @Value("${safi:jwt:secret}")
+    @Value("${safi.jwt.secret}")
     private String secret;
 
     public boolean isValidToken(String token) {
