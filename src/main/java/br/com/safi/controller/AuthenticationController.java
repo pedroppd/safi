@@ -28,11 +28,11 @@ public class AuthenticationController {
 
     @PostMapping()
     public ResponseEntity<TokenDto> authenticate(@RequestBody @Valid AuthForm authForm) {
-        try{
+        try {
             Authentication auth = authenticationManager.authenticate(authForm.converter());
             String token = tokenService.generateTokenJwt(auth);
             return ResponseEntity.ok().body(new TokenDto(token, "Bearer"));
-        }catch(AuthenticationException ex) {
+        } catch(AuthenticationException ex) {
             log.error("Error to try authenticate:" +  ex.getMessage());
             return ResponseEntity.badRequest().build();
         }

@@ -29,6 +29,7 @@ public class UserService {
     @Async
     public CompletableFuture<User> register(String tid, User user) throws MessagingException, IOException {
         try {
+            System.out.println("THREAD 02 - " + Thread.currentThread().getName());
             log.debug("Encoding password...", "tid", tid, "user", user);
             this.encodePassword(user);
             log.debug("Inserting verification code", "tid", tid, "user", user);

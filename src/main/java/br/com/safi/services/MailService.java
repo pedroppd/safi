@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,9 @@ public class MailService {
     @Autowired
     private JavaMailSender sender;
 
+    @Async
     public void sendVerificationEmail(User user) throws MessagingException, IOException {
+        System.out.println("THREAD 03 - " + Thread.currentThread().getName());
         String verifyUrl = verifyEmailUrl + "?code=" + user.getVerificationCode();
         String content = this.buildEmailBody(user.getEmail(), verifyUrl);
         MimeMessage message = sender.createMimeMessage();
