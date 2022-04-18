@@ -1,4 +1,4 @@
-package br.com.safi.models.form;
+package br.com.safi.controller.form;
 
 import br.com.safi.models.User;
 import lombok.Getter;

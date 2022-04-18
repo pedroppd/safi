@@ -1,4 +1,4 @@
-package br.com.safi.models.dto;
+package br.com.safi.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

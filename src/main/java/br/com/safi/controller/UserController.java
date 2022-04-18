@@ -1,8 +1,8 @@
 package br.com.safi.controller;
 
 import br.com.safi.models.User;
-import br.com.safi.models.dto.UserDto;
-import br.com.safi.models.form.UserForm;
+import br.com.safi.controller.dto.UserDto;
+import br.com.safi.controller.form.UserForm;
 import br.com.safi.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +34,8 @@ public class UserController {
         try {
             log.debug("Saving user...", "tid", tid, "user", userForm);
             User user = userForm.converter();
-            System.out.println("THREAD 01 - " + Thread.currentThread().getName());
             User userSaved = userService.register(tid, user).join();
             URI uri = uriBuilder.path("/user/{uuid}").buildAndExpand(userSaved.getId()).toUri();
-            System.out.println("THREAD 011 - " + Thread.currentThread().getName());
             return ResponseEntity.created(uri).body(userSaved.converter());
         } catch (Exception ex) {
             log.error(ex.getMessage(), "tid", tid, "stack", ex.getStackTrace(), "user", userForm);

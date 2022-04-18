@@ -1,9 +1,7 @@
 package br.com.safi.models;
 
-import br.com.safi.models.dto.UserDto;
-import lombok.AllArgsConstructor;
+import br.com.safi.controller.dto.UserDto;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -46,7 +46,6 @@ public class MailService {
 
     @Async
     public void sendVerificationEmail(User user) throws MessagingException, IOException {
-        System.out.println("THREAD 03 - " + Thread.currentThread().getName());
         String verifyUrl = verifyEmailUrl + "?code=" + user.getVerificationCode();
         String content = this.buildEmailBody(user.getEmail(), verifyUrl);
         MimeMessage message = sender.createMimeMessage();
