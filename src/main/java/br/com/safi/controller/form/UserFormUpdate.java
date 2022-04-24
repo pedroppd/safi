@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-public class UserForm {
+public class UserFormUpdate {
 
     @NotEmpty(message = "Field firstName is required.")
     private String firstName;
@@ -21,10 +21,13 @@ public class UserForm {
     @Email(message = "Field email is required.")
     private String email;
 
-    @NotEmpty(message = "Field email is required.")
-    private String password;
 
-    public User converter() {
-        return new User(this.firstName, this.lastName, this.email, this.password);
+    public User update(long id, UserService userService) {
+        User user = userService.getUserById(id);
+        user.setPassword(this.getEmail());
+        user.setEmail(this.getEmail());
+        user.setLastName(this.getLastName());
+        user.setFirstName(this.getFirstName());
+        return user;
     }
 }
