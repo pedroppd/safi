@@ -75,6 +75,6 @@ public class User implements UserDetails {
     }
 
     public UserDto converter() {
-        return new UserDto(this.getFirstName(), this.getLastName(), this.getEmail());
+        return new UserDto(this.getId(), this.getFirstName(), this.getLastName(), this.getEmail());
     }
 }

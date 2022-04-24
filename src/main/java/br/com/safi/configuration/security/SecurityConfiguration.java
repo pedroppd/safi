@@ -39,8 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/email/verify/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/health-check").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/user/**").permitAll()
-                .anyRequest().authenticated().and().csrf().disable()
+                .antMatchers(HttpMethod.POST, "/user").permitAll()
+                .anyRequest().authenticated()
+                .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 //Setando filtro de autenticação antes do filtro padrão do spring
                 .and().addFilterBefore(new AuthenticationTokenFilter(tokenService, userRepository), UsernamePasswordAuthenticationFilter.class);

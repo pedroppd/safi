@@ -6,11 +6,9 @@ import br.com.safi.controller.form.UserForm;
 import br.com.safi.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.mail.MessagingException;
@@ -39,6 +37,22 @@ public class UserController {
             return ResponseEntity.created(uri).body(userSaved.converter());
         } catch (Exception ex) {
             log.error(ex.getMessage(), "tid", tid, "stack", ex.getStackTrace(), "user", userForm);
+            throw ex;
+        }
+    }
+
+    @GetMapping( "/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable(value = "id") long id) {
+        String tid = UUID.randomUUID().toString();
+        try {
+            log.debug(String.format("Gettting user with id {}...", id), "tid", tid);
+            User user = userService.getUserById(id);
+            if(user != null) {
+                return ResponseEntity.ok().body(user.converter());
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), "tid", tid, "stack", ex.getStackTrace(), "userId", id);
             throw ex;
         }
     }

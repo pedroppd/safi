@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -56,6 +57,10 @@ public class UserService {
 
     private void encodePassword(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+    }
+
+    public User getUserById(long userUd) {
+        return this.userRepository.findById(userUd).orElse(null);
     }
 
 }

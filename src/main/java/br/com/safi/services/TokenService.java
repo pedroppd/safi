@@ -41,6 +41,8 @@ public class TokenService {
     }
 
     public Long getUserId(String token) {
-        return Long.parseLong(Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody().getSubject());
+        var body = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+        var subject = body.getSubject();
+        return Long.parseLong(subject);
     }
 }

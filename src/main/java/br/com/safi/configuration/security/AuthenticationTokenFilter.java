@@ -3,7 +3,6 @@ package br.com.safi.configuration.security;
 import br.com.safi.models.User;
 import br.com.safi.repository.IUserRepository;
 import br.com.safi.services.TokenService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,10 +17,8 @@ import java.util.Optional;
 
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
     private TokenService tokenService;
 
-    @Autowired
     private IUserRepository userRepository;
 
     public AuthenticationTokenFilter(TokenService tokenService, IUserRepository userRepository){
@@ -33,8 +30,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
         boolean isValid = this.tokenService.isValidToken(token);
-        //Forcando autenticacao
-        if(isValid){
+
+        if(isValid) {
             authenticateClient(token);
         }
         filterChain.doFilter(request, response);
@@ -44,14 +41,14 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         Long id = tokenService.getUserId(token);
         Optional<User> user = userRepository.findById(id);
         User userPresent = user.orElseThrow(() -> {throw new UsernameNotFoundException("User not found");});
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPresent, null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPresent, null, userPresent.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String getToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        if(token == null || token.isEmpty() || !token.startsWith("Bearer ")){
+        if(token == null || !token.startsWith("Bearer ")) {
             return null;
         }
         int length = token.length();
