@@ -20,18 +20,11 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class MailService {
 
-
-    @Value("${spring.mail.content.path}")
-    private String filePath;
-
     @Value("${spring.mail.sender.address}")
     private String fromAddress;
 
     @Value("${spring.mail.sender.name}")
     private String senderName;
-
-    @Value("${spring.mail.recipient.address}")
-    private String toAddress;
 
     @Value("${spring.mail.subject.content}")
     private String subject;
@@ -39,15 +32,14 @@ public class MailService {
     @Value("${spring.mail.verify.email}")
     private String verifyEmailUrl;
 
-
-
     @Autowired
     private JavaMailSender sender;
 
     @Async
     public void sendVerificationEmail(User user) throws MessagingException, IOException {
         String verifyUrl = verifyEmailUrl + "?code=" + user.getVerificationCode();
-        String content = this.buildEmailBody(user.getEmail(), verifyUrl);
+        String userName = user.getFirstName() +" "+ user.getLastName();
+        String content = this.buildEmailBody(userName, verifyUrl);
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
@@ -58,14 +50,12 @@ public class MailService {
         sender.send(message);
     }
 
-    public String buildEmailBody(String userName, String targetLink) throws IOException {
-        File file = new File(filePath);
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        StringBuilder builder = new StringBuilder();
-        String st;
-        while ((st = br.readLine()) != null) {
-            builder.append(st);
-        }
-        return String.format(builder.toString(), userName, targetLink);
+    public String buildEmailBody(String userName, String targetLink) {
+        String emailBody = "Querido %s,\n" +
+                "<br> Por favor, clique no link abaixo para verificar seu cadastro:<br>\n" +
+                "<h3><a href=\"%s\" target=\"_blank\">VERIFICAR CADASTRO !</a></h3>\n" +
+                "Obrigado,\n" +
+                "<br> SAFI company";
+        return String.format(emailBody, userName, targetLink);
     }
 }

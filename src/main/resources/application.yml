@@ -12,7 +12,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://safidb.database.windows.net;databaseName=SafiDB
     username: SafiAdmin
-    password:
+    password: Cederj123
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
 ##Jpa configuration
   jpa:
@@ -24,8 +24,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: pedroppd90@gmail.com
-    password:
+    username: safifinance2022@gmail.com
+    password: safi@1234
     verify:
       email: http://localhost:8080/safi-finance/api/email/verify
     subject:
@@ -35,8 +35,7 @@ spring:
     sender:
       address: pedro_pdantas@hotmail.com
       name: SAFI
-    content:
-      path: ./src/main/java/br/com/safi/mail/MailContent.txt
+
     properties:
       mail:
         smtp:
