@@ -77,6 +77,11 @@ public class User implements UserDetails {
     }
 
     public UserDto converter() {
-        return new UserDto(this.getId(), this.getFirstName(), this.getLastName(), this.getEmail());
+        return UserDto.builder()
+                .userId(this.getId())
+                .firstName(this.getFirstName())
+                .lastName(this.getLastName())
+                .email(this.getEmail())
+                .isEnable(this.isEnabled()).build();
     }
 }

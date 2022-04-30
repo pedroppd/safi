@@ -1,5 +1,6 @@
 package br.com.safi.controller;
 
+import br.com.safi.controller.dto.UserVerifyDto;
 import br.com.safi.controller.form.UserFormUpdate;
 import br.com.safi.models.User;
 import br.com.safi.controller.dto.UserDto;
@@ -89,6 +90,25 @@ public class UserController {
         } catch (Exception ex) {
             log.error(ex.getMessage(), "tid", tid, "stack", ex.getStackTrace(), "userId", id);
             throw ex;
+        }
+    }
+
+    @GetMapping("/{userId}/verify")
+    public ResponseEntity<UserVerifyDto> userVerify(@PathVariable Long userId) {
+        try {
+            log.debug(String.format("Verifying user with id %n is enable", userId));
+            User user = userService.getUserById(userId);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            UserVerifyDto userDto = UserVerifyDto.builder().isEnable(user.isEnabled()).build();
+
+            return ResponseEntity.ok().body(userDto);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), "stack", e.getStackTrace());
+            throw e;
         }
     }
 }

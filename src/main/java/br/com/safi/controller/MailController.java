@@ -26,20 +26,4 @@ public class MailController {
             return ResponseEntity.badRequest().body("verify_fail");
         }
     }
-
-    @GetMapping("/{userId}/verify")
-    public ResponseEntity<Boolean> userVerify(@PathVariable Long userId) {
-        try {
-            log.debug(String.format("Verifying user with id %n is enable", userId));
-            User user = userService.getUserById(userId);
-            if (user == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok().body(user.isEnabled());
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), "stack", e.getStackTrace());
-            throw e;
-        }
-    }
 }
