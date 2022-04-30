@@ -27,7 +27,7 @@ spring:
     username: safifinance2022@gmail.com
     password: safi@1234
     verify:
-      email: http://localhost:8080/safi-finance/api/email/verify
+      email: https://safibackend.azurewebsites.net/safi-finance/api/email/verify
     subject:
       content: Por favor, verifique seu cadastro.
     recipient:
