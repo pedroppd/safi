@@ -40,7 +40,7 @@ public class UserController {
             log.debug("Saving user...", "tid", tid, "user", userForm);
             User user = userForm.converter();
             User userSaved = userService.register(tid, user).join();
-            URI uri = uriBuilder.path("/user/{uuid}").buildAndExpand(userSaved.getId()).toUri();
+            URI uri = uriBuilder.path("/user/{id}").buildAndExpand(userSaved.getId()).toUri();
             return ResponseEntity.created(uri).body(userSaved.converter());
         } catch (Exception ex) {
             log.error(ex.getMessage(), "tid", tid, "stack", ex.getStackTrace(), "user", userForm);

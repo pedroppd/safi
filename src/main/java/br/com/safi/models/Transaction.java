@@ -1,8 +1,8 @@
 package br.com.safi.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import br.com.safi.controller.dto.TransactionDto;
+import lombok.*;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,9 +10,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Transactions")
-@NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class Transaction {
 
     @Id
@@ -36,5 +37,20 @@ public class Transaction {
     private Currency outputCurrency;
 
     private LocalDateTime transactionDate;
+
+    public Transaction() {
+
+    }
+
+    public TransactionDto converter() {
+        return TransactionDto.builder()
+                .transactionDate(this.getTransactionDate())
+                .outputValue(this.getOutputValue())
+                .inputValue(this.getInputValue())
+                .walletId(this.getWallet().getId())
+                .inputNameCurrency(this.getInputCurrency().getName())
+                .outputNameCurrency(this.getOutputCurrency().getName())
+                .build();
+    }
 
 }

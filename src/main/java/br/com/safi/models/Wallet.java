@@ -1,7 +1,8 @@
 package br.com.safi.models;
 
+import br.com.safi.controller.dto.WalletDto;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,10 +11,18 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Wallets")
-@NoArgsConstructor
 @Getter
 @Setter
 public class Wallet {
+
+    public Wallet(User user) {
+        this.totalVolumeTrade = BigDecimal.ZERO;
+        this.tradingBalance = BigDecimal.ZERO;
+        this.user = user;
+    }
+
+    public Wallet() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +38,14 @@ public class Wallet {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public WalletDto converter() {
+        return WalletDto
+                .builder()
+                .id(this.getId())
+                .userId(this.getId())
+                .totalValueTrade(this.getTotalVolumeTrade())
+                .tradeBalancing(this.getTradingBalance())
+                .build();
+    }
 }
