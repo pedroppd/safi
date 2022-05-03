@@ -13,9 +13,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+@Slf4j
 @RestController
 @RequestMapping("/wallet")
-@Slf4j
 public class WalletController {
 
     @Autowired

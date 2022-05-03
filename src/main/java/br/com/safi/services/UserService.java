@@ -9,9 +9,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -27,9 +24,17 @@ public class UserService {
     @Autowired
     private MailService mailSender;
 
+    @Autowired
+    private UserService userService;
+
     @Async
-    public CompletableFuture<User> register(String tid, User user) throws MessagingException, IOException {
+    public CompletableFuture<User> register(String tid, User user) throws Exception {
         try {
+            log.debug("Verifying if user exist...");
+            User userExist = userService.getUserByEmail(user.getEmail()).join();
+            if(userExist != null) {
+                throw new Exception("User with email "+userExist.getEmail()+" already exists !!");
+            }
             log.debug("Encoding password...", "tid", tid, "user", user);
             this.encodePassword(user);
             log.debug("Inserting verification code", "tid", tid, "user", user);
@@ -38,6 +43,15 @@ public class UserService {
             mailSender.sendVerificationEmail(userSaved);
             return CompletableFuture.completedFuture(userSaved);
         } catch(Exception ex) {
+            throw ex;
+        }
+    }
+
+    @Async
+    CompletableFuture<User> getUserByEmail(String email) {
+        try {
+            return CompletableFuture.completedFuture(userRepository.findByEmail(email).orElse(null));
+        }catch(Exception ex){
             throw ex;
         }
     }

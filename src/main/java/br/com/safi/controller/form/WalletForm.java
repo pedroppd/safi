@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 public class WalletForm {
 
+    private String name;
     private Long userId;
 
     public Wallet converter(UserService userService) {

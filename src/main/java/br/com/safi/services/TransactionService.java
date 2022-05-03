@@ -32,7 +32,7 @@ public class TransactionService {
             Map<String, Currency> currencies = this.handleCurrency(transactionForm).join();
             Transaction transaction = transactionForm.converter(currencies, walletService);
             return CompletableFuture.completedFuture(transactionRespository.save(transaction));
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             throw ex;
         }
     }
