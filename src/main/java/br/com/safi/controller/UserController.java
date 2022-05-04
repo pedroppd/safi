@@ -34,7 +34,7 @@ public class UserController {
     private IUserRepository userRepository;
 
     @PostMapping()
-    public ResponseEntity<UserDto> register(@RequestBody @Valid UserForm userForm, UriComponentsBuilder uriBuilder) throws MessagingException, IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<UserDto> register(@RequestBody @Valid UserForm userForm, UriComponentsBuilder uriBuilder) throws Exception {
         String tid = UUID.randomUUID().toString();
         try {
             log.debug("Saving user...", "tid", tid, "user", userForm);

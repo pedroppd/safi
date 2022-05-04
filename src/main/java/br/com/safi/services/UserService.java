@@ -24,14 +24,12 @@ public class UserService {
     @Autowired
     private MailService mailSender;
 
-    @Autowired
-    private UserService userService;
 
     @Async
     public CompletableFuture<User> register(String tid, User user) throws Exception {
         try {
             log.debug("Verifying if user exist...");
-            User userExist = userService.getUserByEmail(user.getEmail()).join();
+            User userExist = this.getUserByEmail(user.getEmail()).join();
             if(userExist != null) {
                 throw new Exception("User with email "+userExist.getEmail()+" already exists !!");
             }
