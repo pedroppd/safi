@@ -9,10 +9,13 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "wallet_currency")
-@NoArgsConstructor
 @Getter
 @Setter
 public class WalletCurrency {
+
+    public WalletCurrency() {
+
+    }
 
     @Id
     @Column(name = "id", nullable = false)

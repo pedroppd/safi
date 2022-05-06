@@ -11,6 +11,8 @@ public class WalletDto {
 
     private Long id;
 
+    private String name;
+
     private BigDecimal totalValueTrade;
 
     private BigDecimal tradeBalancing;

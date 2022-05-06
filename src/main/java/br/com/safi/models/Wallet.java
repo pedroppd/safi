@@ -1,7 +1,6 @@
 package br.com.safi.models;
 
 import br.com.safi.controller.dto.WalletDto;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,10 +14,11 @@ import java.util.Set;
 @Setter
 public class Wallet {
 
-    public Wallet(User user) {
+    public Wallet(User user, String name) {
         this.totalVolumeTrade = BigDecimal.ZERO;
         this.tradingBalance = BigDecimal.ZERO;
         this.user = user;
+        this.name = name;
     }
 
     public Wallet() {
@@ -27,6 +27,8 @@ public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String name;
 
     private BigDecimal totalVolumeTrade;
 
@@ -43,7 +45,8 @@ public class Wallet {
         return WalletDto
                 .builder()
                 .id(this.getId())
-                .userId(this.getId())
+                .name(this.getName())
+                .userId(this.getUser().getId())
                 .totalValueTrade(this.getTotalVolumeTrade())
                 .tradeBalancing(this.getTradingBalance())
                 .build();

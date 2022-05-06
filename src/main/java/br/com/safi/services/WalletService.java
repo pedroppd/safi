@@ -17,7 +17,7 @@ public class WalletService {
     @Autowired
     private IWalletRepository walletRepository;
 
-    public Wallet getbyId(Long id) throws DataBaseException {
+    public Wallet getById(Long id) throws DataBaseException {
         try {
             return walletRepository.getById(id);
         } catch (Exception ex) {

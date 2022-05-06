@@ -1,9 +1,6 @@
 package br.com.safi.configuration.security.exception;
 
-import br.com.safi.configuration.security.exception.dto.DataBaseException;
-import br.com.safi.configuration.security.exception.dto.ErrorDto;
-import br.com.safi.configuration.security.exception.dto.MethodArgumentNotValidExceptionDto;
-import br.com.safi.configuration.security.exception.dto.ValidationException;
+import br.com.safi.configuration.security.exception.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -58,6 +55,16 @@ public class ValidationExceptionHandler {
 
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ErrorDto> handler(MessagingException exception) {
+        return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
+    }
+
+    @ExceptionHandler(PersistDataException.class)
+    public ResponseEntity<ErrorDto> handler(PersistDataException exception) {
+        return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
+    }
+
+    @ExceptionHandler(GetDataException.class)
+    public ResponseEntity<ErrorDto> handler(GetDataException exception) {
         return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
     }
 

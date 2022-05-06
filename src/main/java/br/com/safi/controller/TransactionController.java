@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(value = "/transaction")
@@ -23,14 +24,9 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody TransactionForm transactionForm, UriComponentsBuilder uriBuilder) {
-        try {
-            Transaction transaction = transactionService.save(transactionForm).join();
-            URI uri = uriBuilder.path("/transaction/{id}").buildAndExpand(transaction.getId()).toUri();
-            return ResponseEntity.created(uri).body(transaction.converter());
-        }catch (Exception ex) {
-            log.error(ex.getMessage(), "stack", ex.getStackTrace());
-            return ResponseEntity.internalServerError().body(ex.getMessage());
-        }
+    public ResponseEntity<?> save(@RequestBody TransactionForm transactionForm, UriComponentsBuilder uriBuilder) throws Exception {
+        Transaction transaction = transactionService.save(transactionForm).join();
+        URI uri = uriBuilder.path("/transaction/{id}").buildAndExpand(transaction.getId()).toUri();
+        return ResponseEntity.created(uri).body(transaction.converter());
     }
 }

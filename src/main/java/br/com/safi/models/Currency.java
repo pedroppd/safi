@@ -9,7 +9,6 @@ import java.util.Set;
 @Table(name = "currency")
 @Getter
 @Setter
-@Builder
 public class Currency {
 
     @Id
@@ -19,6 +18,14 @@ public class Currency {
     @NonNull
     private String name;
 
-    @OneToMany(mappedBy = "currency")
-    private Set<WalletCurrency> registrations;
+ //   @OneToMany(mappedBy = "currency")
+  //  private Set<WalletCurrency> registrations;
+
+    public Currency(String name) {
+        this.name = name;
+    }
+
+    public Currency() {
+
+    }
 }

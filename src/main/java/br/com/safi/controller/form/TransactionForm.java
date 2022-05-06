@@ -33,13 +33,15 @@ public class TransactionForm {
     public Transaction converter(Map<String, Currency> currencies, WalletService walletService) throws Exception {
         Currency inputCurrency = currencies.get("inputCurrencyId");
         Currency outputCurrency = currencies.get("outputCurrencyId");
-        Wallet wallet = walletService.getbyId(this.getWalletId());
+        Wallet wallet = walletService.getById(this.getWalletId());
+
         return Transaction.builder()
                 .transactionDate(this.getTransactionDate())
                 .inputCurrency(inputCurrency)
                 .outputCurrency(outputCurrency)
                 .inputValue(this.getInputValue())
                 .outputValue(this.getOutputValue())
-                .wallet(wallet).build();
+                .wallet(wallet)
+                .build();
     }
 }
