@@ -1,5 +1,6 @@
 package br.com.safi.services;
 
+import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Currency;
 import br.com.safi.models.Transaction;
@@ -33,7 +34,8 @@ public class TransactionService {
             Transaction transaction = transactionForm.converter(currencies, walletService);
             return CompletableFuture.completedFuture(transactionRespository.save(transaction));
         } catch (Exception ex) {
-            throw ex;
+            log.error(ex.getMessage(), "stack", ex.getStackTrace());
+            throw new DataBaseException(ex.getMessage());
         }
     }
 

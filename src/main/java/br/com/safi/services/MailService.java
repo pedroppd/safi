@@ -42,7 +42,6 @@ public class MailService {
         String content = this.buildEmailBody(userName, verifyUrl);
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-
         helper.setFrom(fromAddress, senderName);
         helper.setTo(user.getEmail());
         helper.setSubject(subject);

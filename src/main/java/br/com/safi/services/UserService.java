@@ -1,5 +1,7 @@
 package br.com.safi.services;
 
+import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.User;
 import br.com.safi.repository.IUserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +28,14 @@ public class UserService {
 
 
     @Async
-    public CompletableFuture<User> register(String tid, User user) throws Exception {
+    public CompletableFuture<User> register(String tid, User user) throws DataBaseException {
         try {
             log.debug("Verifying if user exist...");
             User userExist = this.getUserByEmail(user.getEmail()).join();
             if(userExist != null) {
-                throw new Exception("User with email "+userExist.getEmail()+" already exists !!");
+                String errorMessage = "User with email "+userExist.getEmail()+" already exists !!";
+                log.error(errorMessage);
+                throw new ValidationException(errorMessage);
             }
             log.debug("Encoding password...", "tid", tid, "user", user);
             this.encodePassword(user);
@@ -41,22 +45,23 @@ public class UserService {
             mailSender.sendVerificationEmail(userSaved);
             return CompletableFuture.completedFuture(userSaved);
         } catch(Exception ex) {
-            throw ex;
+            log.error(ex.getMessage(), "stack", ex.getStackTrace());
+            throw new DataBaseException(ex.getMessage());
         }
     }
 
     @Async
-    CompletableFuture<User> getUserByEmail(String email) {
+    CompletableFuture<User> getUserByEmail(String email) throws DataBaseException {
         try {
             return CompletableFuture.completedFuture(userRepository.findByEmail(email).orElse(null));
-        }catch(Exception ex){
-            throw ex;
+        } catch(Exception ex) {
+            log.error(ex.getMessage(), "stack", ex.getStackTrace());
+            throw new DataBaseException(ex.getMessage());
         }
     }
 
     public boolean verify(String verificationCode) {
         User user = userRepository.findByVerificationCode(verificationCode).orElse(null);
-
         if (user == null || user.isEnabled()) {
             return false;
         } else{

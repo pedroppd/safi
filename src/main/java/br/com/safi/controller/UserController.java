@@ -9,18 +9,17 @@ import br.com.safi.repository.IUserRepository;
 import br.com.safi.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.mail.MessagingException;
+
 import javax.validation.Valid;
-import java.io.IOException;
+
 import java.net.URI;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+
 
 @Slf4j
 @RestController

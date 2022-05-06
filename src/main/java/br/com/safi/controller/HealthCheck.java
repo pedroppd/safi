@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*",  exposedHeaders = "*",  allowCredentials = "true")
 @RestController
 @RequestMapping(value = "/health-check")
 public class HealthCheck {

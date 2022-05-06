@@ -11,18 +11,19 @@ import java.io.IOException;
 
 @Configuration
 public class CorsConfiguration {
-
+/*
     @Bean
     public WebMvcConfigurer getCorsConfiguration() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                 registry.addMapping("/**")
+                registry.addMapping("/**")
                         .allowedOrigins("*")
                         .allowedHeaders("*")
-                        //.allowCredentials(false)
+                        .allowCredentials(false)
                         .allowedMethods("*");
             }
         };
     }
+ */
 }
