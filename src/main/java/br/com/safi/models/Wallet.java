@@ -3,6 +3,7 @@ package br.com.safi.models;
 import br.com.safi.controller.dto.WalletDto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Table(name = "Wallets")
 @Getter
 @Setter
+@ToString
 public class Wallet {
 
     public Wallet(User user, String name) {
@@ -34,10 +36,7 @@ public class Wallet {
 
     private BigDecimal tradingBalance;
 
-    @OneToMany(mappedBy = "wallet")
-    private Set<WalletCurrency> registrations;
-
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
 

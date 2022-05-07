@@ -8,12 +8,15 @@ import br.com.safi.services.TransactionService;
 import br.com.safi.services.WalletService;
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@Slf4j
 @Data
 public class TransactionForm {
 
@@ -23,18 +26,21 @@ public class TransactionForm {
     private BigDecimal outputValue;
     @NotEmpty(message = "Transaction Date is mandatory")
     private LocalDateTime transactionDate;
-    private Long inputCurrencyId;
     private String inputNameCurrency;
-    private Long outputCurrencyId;
     private String outputNameCurrency;
     @NotEmpty(message = "WalletId is mandatory")
     private Long walletId;
 
     public Transaction converter(Map<String, Currency> currencies, WalletService walletService) throws Exception {
-        Currency inputCurrency = currencies.get("inputCurrencyId");
-        Currency outputCurrency = currencies.get("outputCurrencyId");
-        Wallet wallet = walletService.getById(this.getWalletId());
-
+        Currency inputCurrency = currencies.get("inputCurrency");
+        Currency outputCurrency = currencies.get("outputCurrency");
+        Long walletId = this.getWalletId();
+        Wallet wallet = walletService.getById(walletId);
+        if (wallet == null) {
+            String errorMessage = String.format("Wallet with id %s not exist in database", this.getWalletId());
+            log.error(errorMessage);
+            throw new ValidationException(errorMessage);
+        }
         return Transaction.builder()
                 .transactionDate(this.getTransactionDate())
                 .inputCurrency(inputCurrency)

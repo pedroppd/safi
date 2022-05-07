@@ -1,6 +1,7 @@
 package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.configuration.security.exception.dto.PersistDataException;
 import br.com.safi.models.Currency;
 import br.com.safi.repository.ICurrencyRepository;
@@ -25,21 +26,21 @@ public class CurrencyService {
         }
     }
 
-    public Currency getById(Long id) throws DataBaseException {
+    public Currency getById(Long id) throws GetDataException {
         try {
             return currencyRepository.getById(id);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
-            throw new DataBaseException(ex.getMessage());
+            throw new GetDataException(ex.getMessage());
         }
     }
 
-    public Currency getByName(String name) throws DataBaseException {
+    public Currency getByName(String name) throws GetDataException {
         try {
             return currencyRepository.getByName(name).orElse(null);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
-            throw new DataBaseException(ex.getMessage());
+            throw new GetDataException(ex.getMessage());
         }
     }
 }

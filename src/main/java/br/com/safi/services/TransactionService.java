@@ -1,6 +1,7 @@
 package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.configuration.security.exception.dto.PersistDataException;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Currency;
@@ -41,22 +42,23 @@ public class TransactionService {
         }
     }
 
-    private Map<String, Currency> handleCurrency(TransactionForm transactionForm) throws DataBaseException, PersistDataException {
-        Currency inputCurrencyId = this.getCurrency(transactionForm.getInputCurrencyId(), transactionForm.getInputNameCurrency());
-        Currency outputCurrencyId = this.getCurrency(transactionForm.getOutputCurrencyId(), transactionForm.getOutputNameCurrency());
-        return Map.of("inputCurrencyId", inputCurrencyId, "outputCurrencyId", outputCurrencyId);
+    private Map<String, Currency> handleCurrency(TransactionForm transactionForm) throws PersistDataException, GetDataException {
+        Currency inputCurrency = this.getCurrency(transactionForm.getInputNameCurrency());
+        Currency outputCurrency = this.getCurrency(transactionForm.getOutputNameCurrency());
+        return Map.of("inputCurrency", inputCurrency, "outputCurrency", outputCurrency);
     }
 
+    private Currency getCurrency(String name) throws GetDataException, PersistDataException {
+        if (name == null) {
+            log.error("The parameters name can't be null");
+            throw new IllegalArgumentException("The parameters name can't be null");
+        }
 
-   private Currency getCurrency(Long id, String name) throws PersistDataException, DataBaseException {
-       if (id == null) {
-           Currency currencyExist = currencyService.getByName(name);
-           if(currencyExist == null) {
-               Currency currencyCreated = new Currency(name);
-               return currencyService.save(currencyCreated);
-           }
-           return currencyExist;
-       }
-       return currencyService.getById(id);
-   }
+        Currency currencyExist = currencyService.getByName(name);
+        if (currencyExist == null) {
+            Currency currencyCreated = new Currency(name);
+            return currencyService.save(currencyCreated);
+        }
+        return currencyExist;
+    }
 }
