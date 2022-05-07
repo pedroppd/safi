@@ -36,6 +36,10 @@ public class Transaction {
     @JoinColumn(name = "outputCurrency_id")
     private Currency outputCurrency;
 
+    @ManyToOne
+    @JoinColumn(name = "transactionStatus_id")
+    private TransactionStatus transactionStatus;
+
     private LocalDateTime transactionDate;
 
     public Transaction() {

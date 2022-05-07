@@ -36,6 +36,8 @@ public class Wallet {
 
     private BigDecimal tradingBalance;
 
+    private TransactionStatus status;
+
     @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;

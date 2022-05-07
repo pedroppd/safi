@@ -53,7 +53,6 @@ public class TransactionService {
             log.error("The parameters name can't be null");
             throw new IllegalArgumentException("The parameters name can't be null");
         }
-
         Currency currencyExist = currencyService.getByName(name);
         if (currencyExist == null) {
             Currency currencyCreated = new Currency(name);
