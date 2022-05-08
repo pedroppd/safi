@@ -1,13 +1,12 @@
 package br.com.safi.controller.form;
 
+import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.controller.dto.AbstractConverter;
 import br.com.safi.models.Currency;
 import br.com.safi.models.Transaction;
 import br.com.safi.models.Wallet;
-import br.com.safi.services.CurrencyService;
-import br.com.safi.services.TransactionService;
 import br.com.safi.services.WalletService;
 import lombok.Data;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.ValidationException;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Data
-public class TransactionForm {
+public class TransactionForm extends AbstractConverter<Transaction> {
 
     @NotEmpty(message = "Input value is mandatory")
     private BigDecimal inputValue;
@@ -31,7 +30,7 @@ public class TransactionForm {
     @NotEmpty(message = "WalletId is mandatory")
     private Long walletId;
 
-    public Transaction converter(Map<String, Currency> currencies, WalletService walletService) throws Exception {
+    public Transaction converter(Map<String, Currency> currencies, WalletService walletService) throws DataBaseException {
         Currency inputCurrency = currencies.get("inputCurrency");
         Currency outputCurrency = currencies.get("outputCurrency");
         Long walletId = this.getWalletId();

@@ -1,5 +1,6 @@
 package br.com.safi.models;
 
+import br.com.safi.controller.dto.AbstractConverter;
 import br.com.safi.controller.dto.WalletDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,14 +8,13 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Set;
 
 @Entity
 @Table(name = "Wallets")
 @Getter
 @Setter
 @ToString
-public class Wallet {
+public class Wallet extends AbstractConverter<WalletDto> {
 
     public Wallet(User user, String name) {
         this.totalVolumeTrade = BigDecimal.ZERO;
@@ -35,8 +35,6 @@ public class Wallet {
     private BigDecimal totalVolumeTrade;
 
     private BigDecimal tradingBalance;
-
-    private TransactionStatus status;
 
     @ManyToOne()
     @JoinColumn(name = "user_id")

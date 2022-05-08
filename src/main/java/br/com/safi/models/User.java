@@ -1,11 +1,8 @@
 package br.com.safi.models;
 
+import br.com.safi.controller.dto.AbstractConverter;
 import br.com.safi.controller.dto.UserDto;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,7 +12,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "Users")
 @Data
-public class User implements UserDetails {
+public class User extends AbstractConverter<UserDto> implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

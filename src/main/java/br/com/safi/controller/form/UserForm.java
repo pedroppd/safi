@@ -1,5 +1,6 @@
 package br.com.safi.controller.form;
 
+import br.com.safi.controller.dto.AbstractConverter;
 import br.com.safi.models.User;
 import br.com.safi.services.UserService;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-public class UserForm {
+public class UserForm extends AbstractConverter<User> {
 
     @NotEmpty(message = "Field firstName is required.")
     private String firstName;

@@ -48,6 +48,11 @@ public class ValidationExceptionHandler {
         return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
     }
 
+    @ExceptionHandler(MethodNotImplementException.class)
+    public ResponseEntity<ErrorDto> handler(MethodNotImplementException exception) {
+        return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
+    }
+
     @ExceptionHandler(DataBaseException.class)
     public ResponseEntity<ErrorDto> handler(DataBaseException exception) {
         return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
