@@ -1,6 +1,5 @@
 package br.com.safi.models;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +15,6 @@ public class TransactionStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private TransactionStatusEnum transactionStatus;
-
+    @Column(name = "status")
+    private String status;
 }

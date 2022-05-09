@@ -6,7 +6,6 @@ import br.com.safi.configuration.security.exception.dto.PersistDataException;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Currency;
 import br.com.safi.models.Transaction;
-import br.com.safi.repository.ICurrencyRepository;
 import br.com.safi.repository.ITransactionRespository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,14 @@ public class TransactionService {
     @Autowired
     private WalletService walletService;
 
+    @Autowired
+    private TransactionStatusService transactionStatusService;
+
     @Async
     public CompletableFuture<Transaction> save(TransactionForm transactionForm) throws Exception {
         try {
             Map<String, Currency> currencies = this.handleCurrency(transactionForm);
-            Transaction transaction = transactionForm.converter(currencies, walletService);
+            Transaction transaction = transactionForm.converter(currencies, walletService, transactionStatusService);
             Transaction transactionSaved = transactionRespository.save(transaction);
             return CompletableFuture.completedFuture(transactionSaved);
         } catch (Exception ex) {

@@ -1,8 +1,7 @@
 package br.com.safi.controller.form;
 
-import br.com.safi.controller.dto.AbstractConverter;
+import br.com.safi.models.AbstractConverter;
 import br.com.safi.models.User;
-import br.com.safi.services.UserService;
 import lombok.Getter;
 import lombok.Setter;
 

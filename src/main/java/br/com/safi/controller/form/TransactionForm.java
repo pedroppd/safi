@@ -1,13 +1,14 @@
 package br.com.safi.controller.form;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
-import br.com.safi.controller.dto.AbstractConverter;
-import br.com.safi.models.Currency;
-import br.com.safi.models.Transaction;
-import br.com.safi.models.Wallet;
+import br.com.safi.configuration.security.exception.dto.GetDataException;
+import br.com.safi.models.*;
+import br.com.safi.repository.ITransactionStatusRepository;
+import br.com.safi.services.TransactionStatusService;
 import br.com.safi.services.WalletService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
@@ -29,17 +30,20 @@ public class TransactionForm extends AbstractConverter<Transaction> {
     private String outputNameCurrency;
     @NotEmpty(message = "WalletId is mandatory")
     private Long walletId;
+    private Long transactionStatusId;
 
-    public Transaction converter(Map<String, Currency> currencies, WalletService walletService) throws DataBaseException {
+    public Transaction converter(Map<String, Currency> currencies, WalletService walletService, TransactionStatusService transactionStatusService) throws DataBaseException, GetDataException {
         Currency inputCurrency = currencies.get("inputCurrency");
         Currency outputCurrency = currencies.get("outputCurrency");
-        Long walletId = this.getWalletId();
-        Wallet wallet = walletService.getById(walletId);
-        if (wallet == null) {
-            String errorMessage = String.format("Wallet with id %s not exist in database", this.getWalletId());
+        Wallet wallet = walletService.getById(this.getWalletId());
+        TransactionStatus transactionStatus = transactionStatusService.getById(this.getTransactionStatusId());
+
+        if (wallet == null || transactionStatus == null) {
+            String errorMessage = String.format("Invalid parameters walletId: %s transactionStatus: %s the values not exist in database", this.getWalletId(), this.getTransactionStatusId());
             log.error(errorMessage);
             throw new ValidationException(errorMessage);
         }
+
         return Transaction.builder()
                 .transactionDate(this.getTransactionDate())
                 .inputCurrency(inputCurrency)
@@ -47,6 +51,7 @@ public class TransactionForm extends AbstractConverter<Transaction> {
                 .inputValue(this.getInputValue())
                 .outputValue(this.getOutputValue())
                 .wallet(wallet)
+                .transactionStatus(transactionStatus)
                 .build();
     }
 }

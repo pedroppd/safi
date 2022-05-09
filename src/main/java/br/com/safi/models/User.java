@@ -1,6 +1,5 @@
 package br.com.safi.models;
 
-import br.com.safi.controller.dto.AbstractConverter;
 import br.com.safi.controller.dto.UserDto;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
