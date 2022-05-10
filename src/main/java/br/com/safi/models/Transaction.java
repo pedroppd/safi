@@ -2,6 +2,7 @@ package br.com.safi.models;
 
 import br.com.safi.controller.dto.TransactionDto;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
@@ -40,7 +41,9 @@ public class Transaction {
     @JoinColumn(name = "transactionStatus_id")
     private TransactionStatus transactionStatus;
 
-    private LocalDateTime transactionDate;
+    @Column(name = "created_at")
+    @DateTimeFormat(pattern = "YYYY-MM-DD HH:MM:SS")
+    private LocalDateTime createAt;
 
     public Transaction() {
 
@@ -48,7 +51,7 @@ public class Transaction {
 
     public TransactionDto converter() {
         return TransactionDto.builder()
-                .transactionDate(this.getTransactionDate())
+                .transactionDate(this.getCreateAt())
                 .outputValue(this.getOutputValue())
                 .inputValue(this.getInputValue())
                 .walletId(this.getWallet().getId())

@@ -16,10 +16,8 @@ public class Currency {
     private Long id;
 
     @NonNull
+    @Column(unique = true)
     private String name;
-
- //   @OneToMany(mappedBy = "currency")
-  //  private Set<WalletCurrency> registrations;
 
     public Currency(String name) {
         this.name = name;

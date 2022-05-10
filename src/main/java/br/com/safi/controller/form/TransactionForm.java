@@ -14,6 +14,7 @@ import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 @Slf4j
@@ -24,8 +25,6 @@ public class TransactionForm extends AbstractConverter<Transaction> {
     private BigDecimal inputValue;
     @NotEmpty(message = "Output value is mandatory")
     private BigDecimal outputValue;
-    @NotEmpty(message = "Transaction Date is mandatory")
-    private LocalDateTime transactionDate;
     private String inputNameCurrency;
     private String outputNameCurrency;
     @NotEmpty(message = "WalletId is mandatory")
@@ -44,8 +43,9 @@ public class TransactionForm extends AbstractConverter<Transaction> {
             throw new ValidationException(errorMessage);
         }
 
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         return Transaction.builder()
-                .transactionDate(this.getTransactionDate())
+                .createAt(now)
                 .inputCurrency(inputCurrency)
                 .outputCurrency(outputCurrency)
                 .inputValue(this.getInputValue())

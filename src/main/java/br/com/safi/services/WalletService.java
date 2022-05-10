@@ -1,6 +1,7 @@
 package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.Wallet;
 import br.com.safi.repository.IWalletRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,12 @@ public class WalletService {
 
     public Wallet save(Wallet wallet) throws DataBaseException {
         try {
+            Wallet walletExist = walletRepository.getByName(wallet.getName());
+            if(walletExist != null) {
+                String errorMessage = "Wallet with name "+walletExist.getName()+" already exists !";
+                log.error(errorMessage);
+                throw new ValidationException(errorMessage);
+            }
             return walletRepository.save(wallet);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
