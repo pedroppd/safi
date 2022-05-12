@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -67,9 +68,9 @@ public class TransactionService {
         return currencyExist;
     }
 
-    public List<TransactionDto> getAll(Pageable pagination) throws GetDataException {
+    public List<TransactionDto> getAll() throws GetDataException {
         try {
-            return transactionRespository.findAll(pagination).map(Transaction::converter).toList();
+            return transactionRespository.findAll().stream().map(Transaction::converter).collect(Collectors.toList());
         }catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace(), "error", ex);
             throw new GetDataException(ex.getMessage());

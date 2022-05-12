@@ -34,9 +34,9 @@ public class TransactionController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<TransactionDto>> getAllTransactions(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pagination) throws GetDataException {
+    public ResponseEntity<List<TransactionDto>> getAllTransactions() throws GetDataException {
         log.debug("Starting transaction end point...");
-        List<TransactionDto> currencyList = transactionService.getAll(pagination);
+        List<TransactionDto> currencyList = transactionService.getAll();
         return ResponseEntity.ok().body(currencyList);
     }
 }
