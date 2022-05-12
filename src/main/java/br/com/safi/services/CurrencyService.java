@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class CurrencyService {
@@ -40,6 +42,15 @@ public class CurrencyService {
             return currencyRepository.getByName(name).orElse(null);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
+            throw new GetDataException(ex.getMessage());
+        }
+    }
+
+    public List<Currency> getAll() throws GetDataException {
+        try {
+            return currencyRepository.findAll();
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), "error", ex, "stack", ex.getStackTrace());
             throw new GetDataException(ex.getMessage());
         }
     }

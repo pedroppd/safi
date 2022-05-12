@@ -21,7 +21,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private IUserRepository userRepository;
 
-    public AuthenticationTokenFilter(TokenService tokenService, IUserRepository userRepository){
+    public AuthenticationTokenFilter(TokenService tokenService, IUserRepository userRepository) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
     }
@@ -31,7 +31,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         String token = getToken(request);
         boolean isValid = this.tokenService.isValidToken(token);
 
-        if(isValid) {
+        if (isValid) {
             authenticateClient(token);
         }
         filterChain.doFilter(request, response);
@@ -40,7 +40,9 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private void authenticateClient(String token) {
         Long id = tokenService.getUserId(token);
         Optional<User> user = userRepository.findById(id);
-        User userPresent = user.orElseThrow(() -> {throw new UsernameNotFoundException("User not found");});
+        User userPresent = user.orElseThrow(() -> {
+            throw new UsernameNotFoundException("User not found");
+        });
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPresent, null, userPresent.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
@@ -48,10 +50,10 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private String getToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        if(token == null || !token.startsWith("Bearer ")) {
+        if (token == null || !token.startsWith("Bearer ")) {
             return null;
         }
         int length = token.length();
-       return token.substring(7, length);
+        return token.substring(7, length);
     }
 }

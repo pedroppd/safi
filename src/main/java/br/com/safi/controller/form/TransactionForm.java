@@ -20,11 +20,11 @@ import java.util.Map;
 @Slf4j
 @Data
 public class TransactionForm extends AbstractConverter<Transaction> {
-
     @NotEmpty(message = "Input value is mandatory")
     private BigDecimal inputValue;
     @NotEmpty(message = "Output value is mandatory")
     private BigDecimal outputValue;
+    private LocalDateTime transactionDate;
     private String inputNameCurrency;
     private String outputNameCurrency;
     @NotEmpty(message = "WalletId is mandatory")
@@ -36,7 +36,6 @@ public class TransactionForm extends AbstractConverter<Transaction> {
         Currency outputCurrency = currencies.get("outputCurrency");
         Wallet wallet = walletService.getById(this.getWalletId());
         TransactionStatus transactionStatus = transactionStatusService.getById(this.getTransactionStatusId());
-
         if (wallet == null || transactionStatus == null) {
             String errorMessage = String.format("Invalid parameters walletId: %s transactionStatus: %s the values not exist in database", this.getWalletId(), this.getTransactionStatusId());
             log.error(errorMessage);
@@ -47,6 +46,7 @@ public class TransactionForm extends AbstractConverter<Transaction> {
         return Transaction.builder()
                 .createAt(now)
                 .inputCurrency(inputCurrency)
+                .transactionDate(this.getTransactionDate())
                 .outputCurrency(outputCurrency)
                 .inputValue(this.getInputValue())
                 .outputValue(this.getOutputValue())

@@ -9,11 +9,15 @@ import java.time.LocalDateTime;
 @Data
 public class TransactionDto {
 
+    private Long id;
+
     private BigDecimal inputValue;
 
     private BigDecimal outputValue;
 
     private LocalDateTime transactionDate;
+
+    private LocalDateTime createdAt;
 
     private String inputNameCurrency;
 

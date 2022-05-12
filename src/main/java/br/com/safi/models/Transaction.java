@@ -41,6 +41,9 @@ public class Transaction {
     @JoinColumn(name = "transactionStatus_id")
     private TransactionStatus transactionStatus;
 
+    @Column(name = "transaction_date")
+    private LocalDateTime transactionDate;
+
     @Column(name = "created_at")
     @DateTimeFormat(pattern = "YYYY-MM-DD HH:MM:SS")
     private LocalDateTime createAt;
@@ -51,7 +54,9 @@ public class Transaction {
 
     public TransactionDto converter() {
         return TransactionDto.builder()
-                .transactionDate(this.getCreateAt())
+                .id(this.getId())
+                .createdAt(this.getCreateAt())
+                .transactionDate(this.getTransactionDate())
                 .outputValue(this.getOutputValue())
                 .inputValue(this.getInputValue())
                 .walletId(this.getWallet().getId())

@@ -3,15 +3,19 @@ package br.com.safi.services;
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.configuration.security.exception.dto.PersistDataException;
+import br.com.safi.controller.dto.TransactionDto;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Currency;
 import br.com.safi.models.Transaction;
 import br.com.safi.repository.ITransactionRespository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -61,5 +65,14 @@ public class TransactionService {
             return currencyService.save(currencyCreated);
         }
         return currencyExist;
+    }
+
+    public List<TransactionDto> getAll(Pageable pagination) throws GetDataException {
+        try {
+            return transactionRespository.findAll(pagination).map(Transaction::converter).toList();
+        }catch (Exception ex) {
+            log.error(ex.getMessage(), "stack", ex.getStackTrace(), "error", ex);
+            throw new GetDataException(ex.getMessage());
+        }
     }
 }
