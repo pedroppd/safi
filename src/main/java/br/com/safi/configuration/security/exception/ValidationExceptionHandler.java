@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -81,5 +82,10 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorDto> handler(ValidationException exception){
         return ResponseEntity.badRequest().body(new ErrorDto(400, exception.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorDto> handler(UsernameNotFoundException exception){
+        return ResponseEntity.badRequest().body(new ErrorDto(404, exception.getMessage()));
     }
 }

@@ -3,6 +3,7 @@ package br.com.safi.controller;
 import br.com.safi.services.TokenService;
 import br.com.safi.controller.dto.TokenDto;
 import br.com.safi.controller.form.AuthForm;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class AuthenticationController {
             Authentication auth = authenticationManager.authenticate(authForm.converter());
             String token = tokenService.generateTokenJwt(auth);
             return ResponseEntity.ok().body(new TokenDto(token, "Bearer"));
-        } catch(AuthenticationException ex) {
+        } catch(AuthenticationException | JsonProcessingException ex) {
             log.error("Error to try authenticate:" +  ex.getMessage());
             return ResponseEntity.badRequest().build();
         }

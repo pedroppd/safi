@@ -4,8 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class DataBaseException extends Exception {
-    public DataBaseException(String message) {
+public class UserNameNotFoundException extends Exception {
+
+    public UserNameNotFoundException(String message) {
         super(message);
     }
 }

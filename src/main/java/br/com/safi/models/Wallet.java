@@ -1,5 +1,6 @@
 package br.com.safi.models;
 
+import br.com.safi.controller.WalletController;
 import br.com.safi.controller.dto.WalletDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Entity
 @Table(name = "Wallets")
@@ -48,6 +50,10 @@ public class Wallet extends AbstractConverter<WalletDto> {
     @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "wallet")
+    @ToString.Exclude
+    private List<WalletCurrency> walletCurrency;
 
     public WalletDto converter() {
         return WalletDto

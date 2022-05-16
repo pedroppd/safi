@@ -5,13 +5,14 @@ safi:
 
 #Database configuration
 server:
+  port: 8080
   servlet:
     contextPath : /safi-finance/api
 spring:
   datasource:
-    url: jdbc:sqlserver://safidb.database.windows.net;databaseName=SafiDB
-    username: SafiAdmin
-    password: Cederj123
+    url:
+    username:
+    password:
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
 ##Jpa configuration
   jpa:
@@ -25,14 +26,10 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: safifinance2022@gmail.com
-    password: safi@1234
+    username:
+    password:
     verify:
-      email: https://safibackend.azurewebsites.net/safi-finance/api/email/verify
-    subject:
-      content: Por favor, verifique seu cadastro.
-    recipient:
-      address: pedro_pdantas@hotmail.com
+      email: https://safifront.azurewebsites.net/validate/
     sender:
       address: pedro_pdantas@hotmail.com
       name: SAFI

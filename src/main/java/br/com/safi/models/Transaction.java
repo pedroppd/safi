@@ -25,17 +25,15 @@ public class Transaction {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    private BigDecimal inputValue;
+    @Column(name = "currency_value")
+    private BigDecimal currencyValue;
 
-    private BigDecimal outputValue;
-
-    @OneToOne
-    @JoinColumn(name = "inputCurrency_id")
-    private Currency inputCurrency;
+    @Column(name = "currency_quantity")
+    private BigDecimal currencyQuantity;
 
     @OneToOne
-    @JoinColumn(name = "outputCurrency_id")
-    private Currency outputCurrency;
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 
     @ManyToOne
     @JoinColumn(name = "transactionStatus_id")
@@ -57,11 +55,11 @@ public class Transaction {
                 .id(this.getId())
                 .createdAt(this.getCreateAt())
                 .transactionDate(this.getTransactionDate())
-                .outputValue(this.getOutputValue())
-                .inputValue(this.getInputValue())
                 .walletId(this.getWallet().getId())
-                .inputNameCurrency(this.getInputCurrency().getName())
-                .outputNameCurrency(this.getOutputCurrency().getName())
+                .nameCurrency(this.getCurrency().getName())
+                .currencyValue(this.getCurrencyValue())
+                .transactionName(this.getTransactionStatus().getStatus())
+                .currencyQuantity(this.getCurrencyQuantity())
                 .build();
     }
 

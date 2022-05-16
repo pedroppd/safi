@@ -11,17 +11,17 @@ public class TransactionDto {
 
     private Long id;
 
-    private BigDecimal inputValue;
-
-    private BigDecimal outputValue;
+    private BigDecimal currencyValue;
 
     private LocalDateTime transactionDate;
 
     private LocalDateTime createdAt;
 
-    private String inputNameCurrency;
+    private String nameCurrency;
 
-    private String outputNameCurrency;
+    private BigDecimal currencyQuantity;
+
+    private String transactionName;
 
     private Long walletId;
 }

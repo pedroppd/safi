@@ -1,6 +1,9 @@
 package br.com.safi.services;
 
 import br.com.safi.models.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,16 +30,17 @@ public class TokenService {
         }
     }
 
-    public String generateTokenJwt(Authentication authentication) {
+    public String generateTokenJwt(Authentication authentication) throws JsonProcessingException {
         User user = (User) authentication.getPrincipal();
         Date today = new Date();
         Date expirationDate = new Date(today.getTime() + Long.parseLong(expiration));
+        String json = new ObjectMapper().writer().writeValueAsString(user);
         return Jwts.builder()
                 .setIssuer("safi-api")
-                .setSubject(user.getId().toString())
+                .setSubject(json)
                 .setIssuedAt(today)
                 .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256,secret)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 

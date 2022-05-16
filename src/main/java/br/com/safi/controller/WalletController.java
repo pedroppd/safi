@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -43,6 +44,17 @@ public class WalletController {
         try {
             walletService.delete(walletId);
             return ResponseEntity.ok().build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), "stack", ex.getStackTrace());
+            throw new DataBaseException(ex.getMessage());
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<Wallet>> getAll() throws DataBaseException {
+        try {
+            List<Wallet> walletDtoList = walletService.getAll();
+            return ResponseEntity.ok().body(walletDtoList);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new DataBaseException(ex.getMessage());

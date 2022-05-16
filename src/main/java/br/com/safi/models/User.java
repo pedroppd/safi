@@ -1,6 +1,7 @@
 package br.com.safi.models;
 
 import br.com.safi.controller.dto.UserDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,7 @@ public class User extends AbstractConverter<UserDto> implements UserDetails {
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Column(length = 65, updatable = false)

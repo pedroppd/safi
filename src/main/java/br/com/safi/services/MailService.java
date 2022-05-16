@@ -26,9 +26,6 @@ public class MailService {
     @Value("${spring.mail.sender.name}")
     private String senderName;
 
-    @Value("${spring.mail.subject.content}")
-    private String subject;
-
     @Value("${spring.mail.verify.email}")
     private String verifyEmailUrl;
 
@@ -37,14 +34,14 @@ public class MailService {
 
     @Async
     public void sendVerificationEmail(User user) throws MessagingException, IOException {
-        String verifyUrl = verifyEmailUrl + "?code=" + user.getVerificationCode();
+        String verifyUrl = verifyEmailUrl + user.getVerificationCode();
         String userName = user.getFirstName() +" "+ user.getLastName();
         String content = this.buildEmailBody(userName, verifyUrl);
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         helper.setFrom(fromAddress, senderName);
         helper.setTo(user.getEmail());
-        helper.setSubject(subject);
+        helper.setSubject("Por favor, verifique seu cadastro.");
         helper.setText(content, true);
         sender.send(message);
     }
