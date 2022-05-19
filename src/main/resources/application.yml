@@ -10,11 +10,11 @@ server:
     contextPath : /safi-finance/api
 spring:
   datasource:
-    url:
-    username:
-    password:
+    url: jdbc:sqlserver://safidb.database.windows.net;databaseName=SafiDB
+    username: SafiAdmin
+    password: Cederj123
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
-##Jpa configuration
+  ##Jpa configuration
   jpa:
     show-sql: true
     hibernate:
@@ -26,10 +26,12 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username:
-    password:
+    username: safifinance2022@gmail.com
+    password: safi@1234
     verify:
       email: https://safifront.azurewebsites.net/validate/
+    recipient:
+      address: pedro_pdantas@hotmail.com
     sender:
       address: pedro_pdantas@hotmail.com
       name: SAFI

@@ -3,7 +3,6 @@ package br.com.safi.services;
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.configuration.security.exception.dto.PersistDataException;
-import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.controller.dto.TransactionDto;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Currency;
@@ -12,6 +11,7 @@ import br.com.safi.repository.ITransactionRespository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -84,10 +84,19 @@ public class TransactionService {
         }
     }
 
+    public List<Transaction> getTransactionByWalletIdAndYear(Long walletId, int year) throws GetDataException {
+        try {
+            return transactionRespository.getTransactionByWalletIdAndYear(walletId, year);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), "stack", ex.getStackTrace());
+            throw new GetDataException(ex.getMessage());
+        }
+    }
+
     public List<Transaction> getTransactionsByTransactionStatusAndCurrencyId(Long TransactionStatusId, Long CurrencyId) throws GetDataException {
         try {
-            return transactionRespository.getTransactionByTransactionStatus_IdAndAndCurrency_Id(TransactionStatusId, CurrencyId);
-        } catch(Exception ex) {
+            return transactionRespository.getTransactionByTransactionStatus_IdAndCurrency_Id(TransactionStatusId, CurrencyId);
+        } catch (Exception ex) {
             log.error(ex.getMessage());
             throw new GetDataException(ex.getMessage());
         }
@@ -96,7 +105,7 @@ public class TransactionService {
     public void deleteById(Long id) throws DataBaseException {
         try {
             transactionRespository.deleteById(id);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new DataBaseException(ex.getMessage());
         }

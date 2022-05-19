@@ -1,6 +1,7 @@
 package br.com.safi.controller;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.UserNotFoundException;
 import br.com.safi.controller.dto.WalletDto;
 import br.com.safi.controller.form.WalletForm;
 import br.com.safi.models.Wallet;
@@ -27,15 +28,10 @@ public class WalletController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<WalletDto> save(@RequestBody WalletForm walletForm, UriComponentsBuilder uriBuilder) throws DataBaseException {
-        try {
-            Wallet wallet = walletService.save(walletForm.converter(userService));
-            URI uri = uriBuilder.path("/wallet/{id}").buildAndExpand(wallet.getId()).toUri();
-            return ResponseEntity.created(uri).body(wallet.converter());
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), "stack", ex.getStackTrace());
-            throw new DataBaseException(ex.getMessage());
-        }
+    public ResponseEntity<WalletDto> save(@RequestBody WalletForm walletForm, UriComponentsBuilder uriBuilder) throws DataBaseException, UserNotFoundException {
+        Wallet wallet = walletService.save(walletForm.converter(userService));
+        URI uri = uriBuilder.path("/wallet/{id}").buildAndExpand(wallet.getId()).toUri();
+        return ResponseEntity.created(uri).body(wallet.converter());
     }
 
     //Criar interceptor para verificar se o usuário que está deletando a conta tem permissão para tal ação.
@@ -50,11 +46,11 @@ public class WalletController {
         }
     }
 
-    @GetMapping()
-    public ResponseEntity<List<Wallet>> getAll() throws DataBaseException {
+    @GetMapping("/{userId}/userId")
+    public ResponseEntity<List<Wallet>> getAll(@PathVariable Long userId) throws DataBaseException {
         try {
-            List<Wallet> walletDtoList = walletService.getAll();
-            return ResponseEntity.ok().body(walletDtoList);
+            List<Wallet> wallets = walletService.getAllWalletsByUserId(userId);
+            return ResponseEntity.ok().body(wallets);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new DataBaseException(ex.getMessage());

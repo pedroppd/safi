@@ -1,6 +1,5 @@
 package br.com.safi.services;
 
-import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.configuration.security.exception.dto.PersistDataException;
 import br.com.safi.models.Currency;

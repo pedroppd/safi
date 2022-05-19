@@ -86,6 +86,11 @@ public class ValidationExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorDto> handler(UsernameNotFoundException exception){
-        return ResponseEntity.badRequest().body(new ErrorDto(404, exception.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorDto( 404, exception.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorDto> handler(UserNotFoundException exception){
+        return ResponseEntity.badRequest().body(new ErrorDto( exception.getHttpStatus(), exception.getMessage()));
     }
 }

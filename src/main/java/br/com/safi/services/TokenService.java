@@ -3,10 +3,12 @@ package br.com.safi.services;
 import br.com.safi.models.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ public class TokenService {
 
     @Value("${safi.jwt.secret}")
     private String secret;
+
+    @Autowired
+    private Gson gson;
 
     public boolean isValidToken(String token) {
         try {
@@ -46,7 +51,8 @@ public class TokenService {
 
     public Long getUserId(String token) {
         var body = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
-        var subject = body.getSubject();
-        return Long.parseLong(subject);
+        String subject = body.getSubject();
+        User user = this.gson.fromJson(subject, User.class);
+        return user.getId();
     }
 }

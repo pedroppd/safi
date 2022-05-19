@@ -4,13 +4,11 @@ import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.Transaction;
-import br.com.safi.models.Wallet;
 import br.com.safi.models.WalletCurrency;
 import br.com.safi.repository.IWalletCurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

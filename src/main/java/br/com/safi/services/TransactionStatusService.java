@@ -3,7 +3,6 @@ package br.com.safi.services;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
 import br.com.safi.models.TransactionStatus;
 import br.com.safi.repository.ITransactionStatusRepository;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
