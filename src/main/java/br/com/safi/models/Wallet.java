@@ -2,9 +2,11 @@ package br.com.safi.models;
 
 import br.com.safi.controller.WalletController;
 import br.com.safi.controller.dto.WalletDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -52,8 +54,13 @@ public class Wallet extends AbstractConverter<WalletDto> {
     private User user;
 
     @OneToMany(mappedBy = "wallet")
-    @ToString.Exclude
+    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
     private List<WalletCurrency> walletCurrency;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "wallet")
+    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+    private List<Transaction> transactions;
 
     public WalletDto converter() {
         return WalletDto

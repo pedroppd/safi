@@ -30,13 +30,6 @@ public class TransactionController {
         return ResponseEntity.created(uri).body(transaction.converter());
     }
 
-    @GetMapping()
-    public ResponseEntity<List<TransactionDto>> getAllTransactions() throws GetDataException {
-        log.debug("Starting transaction end point...");
-        List<TransactionDto> currencyList = transactionService.getAll();
-        return ResponseEntity.ok().body(currencyList);
-    }
-
     @GetMapping("/wallet/{walletId}")
     public ResponseEntity<List<TransactionDto>> getAllTransactionsByWalletId(@PathVariable Long walletId) throws GetDataException {
         log.debug("Starting transaction end point...");
