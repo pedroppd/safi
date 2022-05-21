@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@ToString
 @AllArgsConstructor
 public class Transaction {
 
@@ -62,5 +63,4 @@ public class Transaction {
                 .currencyQuantity(this.getCurrencyQuantity())
                 .build();
     }
-
 }

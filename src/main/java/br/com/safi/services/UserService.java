@@ -1,6 +1,7 @@
 package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.UserNotFoundException;
 import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.User;
 import br.com.safi.repository.IUserRepository;
@@ -31,9 +32,9 @@ public class UserService {
     public CompletableFuture<User> register(String tid, User user) throws DataBaseException {
         try {
             log.debug("Verifying if user exist...");
-            User userExist = this.getUserByEmail(user.getEmail()).join();
-            if(userExist != null) {
-                String errorMessage = "User with email "+userExist.getEmail()+" already exists !!";
+            User userExist = this.getUserByEmail(user.getEmail());
+            if (userExist != null) {
+                String errorMessage = "User with email " + userExist.getEmail() + " already exists !!";
                 log.error(errorMessage);
                 throw new ValidationException(errorMessage);
             }
@@ -44,27 +45,21 @@ public class UserService {
             User userSaved = this.userRepository.save(user);
             mailSender.sendVerificationEmail(userSaved);
             return CompletableFuture.completedFuture(userSaved);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new DataBaseException(ex.getMessage());
         }
     }
 
-    @Async
-    CompletableFuture<User> getUserByEmail(String email) throws DataBaseException {
-        try {
-            return CompletableFuture.completedFuture(userRepository.findByEmail(email).orElse(null));
-        } catch(Exception ex) {
-            log.error(ex.getMessage(), "stack", ex.getStackTrace());
-            throw new DataBaseException(ex.getMessage());
-        }
+    User getUserByEmail(String email) throws UserNotFoundException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(404, "Usuário não encontrado"));
     }
 
     public boolean verify(String verificationCode) {
         User user = userRepository.findByVerificationCode(verificationCode).orElse(null);
         if (user == null || user.isEnabled()) {
             return false;
-        } else{
+        } else {
             user.setVerificationCode(null);
             user.setEnabled(true);
             userRepository.save(user);

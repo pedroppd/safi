@@ -1,6 +1,9 @@
 package br.com.safi.controller;
 
+import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
+import br.com.safi.configuration.security.exception.dto.UnauthorizeException;
+import br.com.safi.configuration.security.exception.dto.UserNotFoundException;
 import br.com.safi.controller.dto.TransactionDto;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Transaction;
@@ -11,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +36,14 @@ public class TransactionController {
 
     @GetMapping("/wallet/{walletId}")
     public ResponseEntity<List<TransactionDto>> getAllTransactionsByWalletId(@PathVariable Long walletId) throws GetDataException {
-        log.debug("Starting transaction end point...");
         List<TransactionDto> transactionList = transactionService.getTransactionByWalletId(walletId).stream().map(Transaction::converter).collect(Collectors.toList());
         return ResponseEntity.ok().body(transactionList);
+    }
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<Void> getAllTransactionsByWalletId(@PathVariable Long transactionId, HttpServletRequest request) throws UnauthorizeException, UserNotFoundException {
+        String userEmail = request.getRemoteUser();
+        transactionService.deleteTransaction(transactionId, userEmail);
+        return ResponseEntity.ok().build();
     }
 }

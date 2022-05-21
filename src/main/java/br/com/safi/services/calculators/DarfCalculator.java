@@ -3,6 +3,8 @@ package br.com.safi.services.calculators;
 import br.com.safi.models.Currency;
 import br.com.safi.models.Transaction;
 import br.com.safi.services.interfaces.ICalcTax;
+import net.bytebuddy.TypeCache;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -31,14 +33,12 @@ public class DarfCalculator implements ICalcTax {
         for (int month = 1; month <= transactionList.size(); month++) {
             int finalMonth = month;
 
-            Map<Currency, List<Transaction>> map = new HashMap<>();
-
             List<Transaction> monthTransaction = transactionList
                     .stream()
                     .filter(x -> x.getTransactionDate()
                             .getMonthValue() == finalMonth).collect(Collectors.toList());
 
-             var mapTransactionList = monthTransaction
+             Map<Currency, List<Transaction>> mapTransactionList = monthTransaction
                     .stream()
                     .collect(Collectors.groupingBy(Transaction::getCurrency));
 

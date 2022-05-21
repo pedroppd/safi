@@ -1,17 +1,14 @@
 package br.com.safi.services;
 
-import br.com.safi.configuration.security.exception.dto.DataBaseException;
-import br.com.safi.configuration.security.exception.dto.GetDataException;
-import br.com.safi.configuration.security.exception.dto.PersistDataException;
+import br.com.safi.configuration.security.exception.dto.*;
 import br.com.safi.controller.dto.TransactionDto;
 import br.com.safi.controller.form.TransactionForm;
 import br.com.safi.models.Currency;
 import br.com.safi.models.Transaction;
+import br.com.safi.models.User;
 import br.com.safi.repository.ITransactionRespository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -24,20 +21,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    @Autowired
-    private CurrencyService currencyService;
 
-    @Autowired
-    private ITransactionRespository transactionRespository;
-
-    @Autowired
-    private WalletService walletService;
-
-    @Autowired
-    private TransactionStatusService transactionStatusService;
-
-    @Autowired
-    private WalletCurrencyService walletCurrencyService;
+    private final CurrencyService currencyService;
+    private final ITransactionRespository transactionRespository;
+    private final WalletService walletService;
+    private final TransactionStatusService transactionStatusService;
+    private final WalletCurrencyService walletCurrencyService;
+    private final UserService userService;
 
     @Async
     public CompletableFuture<Transaction> save(TransactionForm transactionForm) throws Exception {
@@ -108,6 +98,18 @@ public class TransactionService {
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new DataBaseException(ex.getMessage());
+        }
+    }
+
+    public void deleteTransaction(Long transactionId, String userEmail) throws UnauthorizeException, UserNotFoundException {
+        User user = userService.getUserByEmail(userEmail);
+        Transaction transaction = transactionRespository.getTransactionById(transactionId).orElseThrow(() -> new TransactionNotFoundException(404, "Transação não encontrada"));
+        if(transaction.getWallet().getUser().getId().equals(user.getId())) {
+            transactionRespository.deleteById(transactionId);
+        } else {
+            String errorMessage = String.format("Usuário %n não está autorizado a deletar a transação com o id %s", user.getEmail(), transaction.getId());
+            log.error(errorMessage);
+            throw new UnauthorizeException(403, errorMessage);
         }
     }
 }

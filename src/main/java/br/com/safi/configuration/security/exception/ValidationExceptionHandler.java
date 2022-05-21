@@ -80,17 +80,22 @@ public class ValidationExceptionHandler {
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorDto> handler(ValidationException exception){
+    public ResponseEntity<ErrorDto> handler(ValidationException exception) {
         return ResponseEntity.badRequest().body(new ErrorDto(400, exception.getMessage()));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorDto> handler(UsernameNotFoundException exception){
+    public ResponseEntity<ErrorDto> handler(UsernameNotFoundException exception) {
         return ResponseEntity.badRequest().body(new ErrorDto( 404, exception.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorDto> handler(UserNotFoundException exception){
-        return ResponseEntity.badRequest().body(new ErrorDto( exception.getHttpStatus(), exception.getMessage()));
+    public ResponseEntity<ErrorDto> handler(UserNotFoundException exception) {
+        return ResponseEntity.badRequest().body(new ErrorDto(exception.getHttpStatus(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthorizeException.class)
+    public ResponseEntity<ErrorDto> handler(UnauthorizeException exception) {
+        return ResponseEntity.badRequest().body(new ErrorDto(exception.getHttpStatus(), exception.getMessage()));
     }
 }
