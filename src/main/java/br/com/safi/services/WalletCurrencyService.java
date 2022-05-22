@@ -80,7 +80,7 @@ public class WalletCurrencyService {
 
     private WalletCurrency increaseOrDecreaseQuantity(WalletCurrency walletCurrency, Transaction transaction, TransactionService transactionService) throws ValidationException, DataBaseException {
         if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
-            BigDecimal quantity = walletCurrency.getQuantity().add(transaction.getCurrencyQuantity());
+            Double quantity = walletCurrency.getQuantity() + transaction.getCurrencyQuantity();
             walletCurrency.setQuantity(quantity);
             return walletCurrencyRepository.save(walletCurrency);
         } else {
@@ -90,8 +90,8 @@ public class WalletCurrencyService {
                 log.error(errorMessage);
                 throw new ValidationException(errorMessage);
             }
-            BigDecimal quantity = walletCurrency.getQuantity().subtract(transaction.getCurrencyQuantity());
-            if (quantity.compareTo(BigDecimal.ZERO) <= 0) {
+            double quantity = walletCurrency.getQuantity() - transaction.getCurrencyQuantity();
+            if (quantity <= 0) {
                 walletCurrencyRepository.deleteById(walletCurrency.getId());
             } else {
                 walletCurrency.setQuantity(quantity);
@@ -109,12 +109,12 @@ public class WalletCurrencyService {
         //Quantidade total de moedas: 500 (200 + 300). Agora vamos ao cálculo do custo médio.
         //(2.800 + 10) + (4.500 + 10) / 500 = R$ 14,64 (preço médio)
         //BigDecimal quantity = transactionList.stream().map(Transaction::getCurrencyQuantity).reduce(BigDecimal::add).get();
-        BigDecimal quantity = walletCurrency.getQuantity();
-        BigDecimal currencyTotalPrice = transactionList
+        Double quantity = walletCurrency.getQuantity();
+        Double currencyTotalPrice = transactionList
                 .stream()
-                .map((x) -> x.getCurrencyQuantity().multiply(x.getCurrencyValue())).reduce(BigDecimal::add).get();
+                .map((x) -> x.getCurrencyQuantity() * x.getCurrencyValue()).reduce(Double::sum).get();
 
-        BigDecimal rest = currencyTotalPrice.divide(quantity, RoundingMode.CEILING);
+        Double rest = currencyTotalPrice / quantity;
         walletCurrency.setAveragePrice(rest);
         walletCurrencyRepository.save(walletCurrency);
     }

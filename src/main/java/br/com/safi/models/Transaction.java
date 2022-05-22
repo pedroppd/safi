@@ -26,10 +26,10 @@ public class Transaction {
     private Wallet wallet;
 
     @Column(name = "currency_value")
-    private BigDecimal currencyValue;
+    private Double currencyValue;
 
     @Column(name = "currency_quantity")
-    private BigDecimal currencyQuantity;
+    private Double currencyQuantity;
 
     @OneToOne
     @JoinColumn(name = "currency_id")

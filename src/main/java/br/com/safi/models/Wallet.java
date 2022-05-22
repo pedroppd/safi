@@ -23,8 +23,8 @@ import java.util.List;
 public class Wallet extends AbstractConverter<WalletDto> {
 
     public Wallet(User user, String name) {
-        this.totalVolumeTrade = BigDecimal.ZERO;
-        this.tradingBalance = BigDecimal.ZERO;
+        this.totalVolumeTrade = 0.0;
+        this.tradingBalance = 0.0;
         this.user = user;
         this.name = name;
         this.setCreateAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
@@ -41,9 +41,9 @@ public class Wallet extends AbstractConverter<WalletDto> {
     @Column(unique = true)
     private String name;
 
-    private BigDecimal totalVolumeTrade;
+    private Double totalVolumeTrade;
 
-    private BigDecimal tradingBalance;
+    private Double tradingBalance;
 
     @Column(name = "created_at")
     @DateTimeFormat(pattern = "YYYY-MM-DD HH:MM:SS")

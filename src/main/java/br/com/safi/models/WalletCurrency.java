@@ -33,9 +33,9 @@ public class WalletCurrency {
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
-    private BigDecimal quantity;
+    private Double quantity;
 
-    private BigDecimal averagePrice;
+    private Double averagePrice;
 
     private LocalDateTime createAt;
 

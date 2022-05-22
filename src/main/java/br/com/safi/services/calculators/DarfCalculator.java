@@ -6,6 +6,8 @@ import br.com.safi.services.interfaces.ICalcTax;
 import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,90 +16,84 @@ public class DarfCalculator implements ICalcTax {
     private static final String BUY = "BUY";
     private static final String SELL = "SELL";
 
-/*
-* "hasDebit": true, //balance > 0 && volumeTradedSell > 35000
-	"volumeTradedBuy": 40000,
-	"volumeTradedSell": 20000,
-	"debitValue": 15.000,00,
-	"expirationDate": "20/06/2022",
-	"balance": -1.000,00,
-	"month": 'Maio'	*/
-
     @Override
     public void calcTax(List<Transaction> transactionList) {
 
-        //TODO: Pegar todas as transações de uma determinada moeda. DONE
-        //TODO: Ordenar por data ascendente. DONE
-        //TODO: Criar variável de quantidade atual e valor total atual.
-        //TODO: Em ordem de compra somar a quantidade atual e o valor total atual.
-        //TODO: Criar variável 'balancer'
-        //TODO: Em ordem de venda atualizar variável balancer.
-        //TODO: Atualizar a variável quantidade atual = (Quantidade atual - Quantidade vendida) e
-        //valor total atual = (valor total atual - (Quantidade Vendida * Valor total atual))
-
         for (int month = 1; month < 12; month++) {
-            int finalMonth = month;
-
-            Map<Currency, List<Transaction>> map = new HashMap<>();
-
+            int monthValue = month;
             List<Transaction> monthTransaction = transactionList
                     .stream()
                     .filter(x -> x.getTransactionDate()
-                            .getMonthValue() == finalMonth).collect(Collectors.toList());
+                            .getMonthValue() == monthValue).collect(Collectors.toList());
 
             var mapTransactionList = monthTransaction
                     .stream()
                     .collect(Collectors.groupingBy(Transaction::getCurrency)).entrySet();
 
-            mapTransactionList.forEach((mapTransactions) -> {
-                Currency currentCurreny = mapTransactions.getKey();
-                var qtdAtual = 0;
-                var totalValue = 0;
+            Double volumeCompra = 0.0;
+            Double volumeVenda = 0.0;
+            Double balancer = 0.0;
+            boolean hasDebit = false;
+            for (var mapTransactions : mapTransactionList) {
                 var transactions = mapTransactions.getValue();
-                var totalUnitSell = getTotalAmount(SELL, transactions);
-                var totalUnitWallet = getTotalQuantityInWallet(transactions);
-
-                getAllTransactionByStatus(BUY, transactions).forEach((buyTransaction) -> {
-                    getAllTransactionByStatus(SELL, transactions).forEach((transaction) -> {
-                        var totalSell = transaction.getCurrencyValue();
-                        var quantitySell = transaction.getCurrencyQuantity();
-                        var quantityBuy = buyTransaction.getCurrencyQuantity();
-                        var totalBuy = buyTransaction.getCurrencyValue();
-                    });
-                });
-
-
-                //Transação referente a uma determinada moeda.
-            /*    mapTransactions.getValue().forEach((transaction) -> {
-                    transaction.
-                    System.out.println(transaction);
-               });*/
-            });
-
-            List<Transaction> sellTransaction = getTotalSellTransaction(transactionList);
-            //calculateTax(totalBuyAmount, sellTransaction);
+                //TODO: Pegar todas as transações de uma determinada moeda. DONE
+                //TODO: Ordenar por data ascendente. DONE
+                //TODO: Criar variável de quantidade atual e valor total atual.
+                //TODO: Em ordem de compra somar a quantidade atual e o valor total atual.
+                //TODO: Criar variável 'balancer'
+                //TODO: Em ordem de venda atualizar variável balancer.
+                //TODO: Atualizar a variável quantidade atual = (Quantidade atual - Quantidade vendida) e
+                //TODO: valor total atual = (valor total atual - (Quantidade Vendida * Valor total atual))
+                /*"hasDebit": true, //balance > 0 && volumeTradedSell > 35000
+                        "volumeTradedBuy": 40000,
+                        "volumeTradedSell": 20000,
+                        "debitValue": 15.000,00,
+                        "expirationDate": "20/06/2022",
+                        "balance": -1.000,00,
+                        "month": 'Maio'	*/
+                Double quantidadeAtual = 0.0;
+                Double valorTotalAtual = 0.0;
+                for (Transaction transaction : transactions) {
+                    if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
+                        quantidadeAtual += transaction.getCurrencyQuantity();
+                        valorTotalAtual += transaction.getCurrencyValue();
+                        volumeCompra += transaction.getCurrencyValue();
+                    } else {
+                        if (quantidadeAtual >= transaction.getCurrencyQuantity()) {
+                            balancer += transaction.getCurrencyValue()-((transaction.getCurrencyQuantity()/quantidadeAtual) * valorTotalAtual);
+                            valorTotalAtual -= (transaction.getCurrencyQuantity()/quantidadeAtual) * valorTotalAtual;
+                            quantidadeAtual -= transaction.getCurrencyQuantity();
+                            volumeVenda += transaction.getCurrencyValue();
+                        } else {
+                            throw new IllegalArgumentException("Valor maior do que o disponível para venda.");
+                        }
+                    }
+                }
+            }
+            var debitValue = 0.0;
+            if(volumeVenda >= 35000 && balancer > 0) {
+                hasDebit = true;
+                debitValue = balancer * 0.15;
+            }
+            var oHasDebit = hasDebit;
+            var oVolumeCompra = volumeCompra;
+            var oVolumeVenda = volumeVenda;
+            var oDebitValue = debitValue;
+            var expirationDate = LocalDateTime.now().plusMonths(1);
+            var month2 = "jan";
+            var oBalancer = balancer;
         }
     }
 
-    private void calculateTax(BigDecimal totalBuyAmount, List<Transaction> sellTransaction) {
-        sellTransaction.forEach((x) -> {
-            //Valor da venda.
-            BigDecimal saleValue = x.getCurrencyValue().multiply(x.getCurrencyQuantity());
-        });
+    private BigDecimal makeTaxCalc(BigDecimal totalSell, BigDecimal quantitySell, BigDecimal quantityBuy, BigDecimal totalBuy) {
+        var result = totalSell.subtract(quantitySell.divide(quantityBuy, RoundingMode.CEILING).multiply(totalBuy));
+        return result.setScale(2, RoundingMode.CEILING);
     }
 
     private boolean needToPayTax(BigDecimal totalSellAmount) {
         return totalSellAmount.compareTo(new BigDecimal(35000)) > 0;
     }
 
-    private BigDecimal getTotalAmount(String buyOrSell, List<Transaction> transactionList) {
-        var result = transactionList
-                .stream()
-                .filter(x -> buyOrSell.equals(x.getTransactionStatus().getStatus()))
-                .map(Transaction::getCurrencyValue)
-                .reduce(BigDecimal::add);
-        return result.orElse(BigDecimal.ZERO);
-    }
 
     private List<Transaction> getTotalSellTransaction(List<Transaction> transactionList) {
         return transactionList
@@ -116,10 +112,5 @@ public class DarfCalculator implements ICalcTax {
                 .stream()
                 .filter(x -> status.equals(x.getTransactionStatus().getStatus())).sorted((o1, o2) -> o1.getTransactionDate().isAfter(o2.getTransactionDate()) ? 1 : 0).collect(Collectors.toList());
         return transactions;
-    }
-
-
-    private BigDecimal getTotalQuantityInWallet(List<Transaction> transactionList) {
-        return transactionList.stream().map(Transaction::getCurrencyQuantity).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 }

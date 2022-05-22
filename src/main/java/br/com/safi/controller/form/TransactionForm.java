@@ -21,8 +21,8 @@ public class TransactionForm extends AbstractConverter<Transaction> {
     private LocalDateTime transactionDate;
     @NotEmpty(message = "Input value is mandatory")
     private String nameCurrency;
-    private BigDecimal currencyValue;
-    private BigDecimal currencyQuantity;
+    private Double currencyValue;
+    private Double currencyQuantity;
     @NotEmpty(message = "WalletId is mandatory")
     private Long walletId;
 
