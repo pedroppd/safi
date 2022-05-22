@@ -1,6 +1,7 @@
 package br.com.safi.controller;
 
 import br.com.safi.configuration.security.exception.dto.GetDataException;
+import br.com.safi.controller.dto.DarfDto;
 import br.com.safi.models.Transaction;
 import br.com.safi.services.calculators.DarfCalculator;
 import br.com.safi.services.TaxService;
@@ -22,9 +23,9 @@ public class TaxController {
     private TransactionService transactionService;
 
     @GetMapping("/{walletId}/wallet/{year}/year")
-    public ResponseEntity<Void> calcTax(@PathVariable(value = "walletId") Long walletId, @PathVariable(value = "year") int year) throws GetDataException {
+    public ResponseEntity<List<DarfDto>> calcTax(@PathVariable(value = "walletId") Long walletId, @PathVariable(value = "year") int year) throws GetDataException {
         List<Transaction> transactionList = transactionService.getTransactionByWalletIdAndYear(walletId, year);
-        taxService.calcTax(transactionList, new DarfCalculator());
-        return null;
+        List<DarfDto> taxResult = taxService.calcTax(transactionList, new DarfCalculator());
+        return ResponseEntity.ok().body(taxResult);
     }
 }

@@ -2,6 +2,7 @@ package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
 import br.com.safi.configuration.security.exception.dto.GetDataException;
+import br.com.safi.configuration.security.exception.dto.TransactionNotFoundException;
 import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.Transaction;
 import br.com.safi.models.WalletCurrency;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,12 +23,14 @@ public class WalletCurrencyService {
 
     @Autowired
     private IWalletCurrencyRepository walletCurrencyRepository;
-    private static final String BUY = "BUY";
-    private static final String SELL = "SELL";
+    private static final String BUY = "COMPRA";
+    private static final String SELL = "VENDA";
+    private static final String ADD = "ADD";
+    private static final String DELETE = "DELETE";
+    private static final String UPDATE = "UPDATE";
 
-    public void save(Transaction transaction, TransactionService transactionService) throws GetDataException, ValidationException, DataBaseException {
+    public void save(Transaction transaction, TransactionService transactionService, String mode) throws GetDataException, ValidationException, DataBaseException, TransactionNotFoundException {
         WalletCurrency walletCurrency = this.getWalletCurrencyByWalletIdAndCurrencyId(transaction.getWallet().getId(), transaction.getCurrency().getId());
-
         if (walletCurrency == null && SELL.equals(transaction.getTransactionStatus().getStatus())) {
             transactionService.deleteById(transaction.getId());
             String errorMessage = String.format("User %s does not have crypto %s in order to carry out a sale operation.", transaction.getWallet().getUser().getFirstName(), transaction.getCurrency().getName());
@@ -40,9 +41,35 @@ public class WalletCurrencyService {
             WalletCurrency walletCurrencyInputValue = this.CreateWalletCurrency(transaction);
             walletCurrencyRepository.save(walletCurrencyInputValue);
         } else {
+            updateTransactionAndWalletCurrency(transaction, mode, walletCurrency, transactionService);
+        }
+    }
+
+    public void updateTransactionAndWalletCurrency(Transaction transaction, String mode, WalletCurrency walletCurrency, TransactionService transactionService) throws ValidationException, DataBaseException, GetDataException, TransactionNotFoundException {
+        if (ADD.equals(mode)) {
             WalletCurrency walletCurrencyQuantityUpdated = increaseOrDecreaseQuantity(walletCurrency, transaction, transactionService);
             if (BUY.equals(transaction.getTransactionStatus().getStatus()) && walletCurrencyQuantityUpdated != null) {
-                calcAveragePrice(walletCurrencyQuantityUpdated, transaction, transactionService);
+                calcAveragePrice(walletCurrencyQuantityUpdated, transaction, transactionService, false);
+            }
+        } else if (DELETE.equals(mode)) {
+            if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
+                walletCurrency.setQuantity(walletCurrency.getQuantity() - transaction.getCurrencyQuantity());
+                calcAveragePrice(walletCurrency, transaction, transactionService, true);
+
+            } else {
+                walletCurrency.setQuantity(walletCurrency.getQuantity() + transaction.getCurrencyQuantity());
+            }
+        } else if (UPDATE.equals(mode)) {
+            Transaction transactionSaved = transactionService.getTransactionById(transaction.getId());
+            if (BUY.equals(transactionSaved.getTransactionStatus().getStatus())) {
+                walletCurrency.setQuantity(walletCurrency.getQuantity() - transactionSaved.getCurrencyQuantity());
+                calcAveragePrice(walletCurrency, transactionSaved, transactionService, true);
+            } else {
+                walletCurrency.setQuantity(walletCurrency.getQuantity() + transactionSaved.getCurrencyQuantity());
+            }
+            WalletCurrency walletCurrencyQuantityUpdated = increaseOrDecreaseQuantity(walletCurrency, transaction, transactionService);
+            if (BUY.equals(transaction.getTransactionStatus().getStatus()) && walletCurrencyQuantityUpdated != null) {
+                calcAveragePrice(walletCurrencyQuantityUpdated, transaction, transactionService, false);
             }
         }
     }
@@ -72,7 +99,7 @@ public class WalletCurrencyService {
                 .currency(transaction.getCurrency())
                 .wallet(transaction.getWallet())
                 .quantity(transaction.getCurrencyQuantity())
-                .averagePrice(transaction.getCurrencyValue())
+                .averagePrice(transaction.getAmountInvested())
                 .createAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -101,18 +128,25 @@ public class WalletCurrencyService {
         }
     }
 
-    private void calcAveragePrice(WalletCurrency walletCurrency, Transaction transaction, TransactionService transactionService) throws GetDataException {
-        List<Transaction> transactionList = transactionService.getTransactionsByTransactionStatusAndCurrencyId(transaction.getTransactionStatus().getId(), walletCurrency.getCurrency().getId());
+    private void calcAveragePrice(WalletCurrency walletCurrency, Transaction transaction, TransactionService transactionService, boolean estorno) throws GetDataException {
+        List<Transaction> transactionList = transactionService
+                .getTransactionsByTransactionStatusAndCurrencyId(transaction.getTransactionStatus().getId(), walletCurrency.getCurrency().getId());
+
+        if(estorno) {
+            transactionList.remove(transaction);
+        }
+
         // 1 transação = 1 compra
         //1ª compra: 200 moedas a R$ 14 (200 x R$ 14) = 2.800
         //2ª compra: 300 moedas a R$ 15 (300 x R$ 15) = 4.500
         //Quantidade total de moedas: 500 (200 + 300). Agora vamos ao cálculo do custo médio.
-        //(2.800 + 10) + (4.500 + 10) / 500 = R$ 14,64 (preço médio)
+        //2.800 + 4.500 / 500 = R$ 14,64 (preço médio)
         //BigDecimal quantity = transactionList.stream().map(Transaction::getCurrencyQuantity).reduce(BigDecimal::add).get();
+
         Double quantity = walletCurrency.getQuantity();
         Double currencyTotalPrice = transactionList
                 .stream()
-                .map((x) -> x.getCurrencyQuantity() * x.getCurrencyValue()).reduce(Double::sum).get();
+                .map((x) -> x.getCurrencyQuantity() * (x.getAmountInvested() / x.getCurrencyQuantity())).reduce(Double::sum).get();
 
         Double rest = currencyTotalPrice / quantity;
         walletCurrency.setAveragePrice(rest);

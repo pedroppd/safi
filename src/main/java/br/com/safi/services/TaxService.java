@@ -1,5 +1,6 @@
 package br.com.safi.services;
 
+import br.com.safi.controller.dto.DarfDto;
 import br.com.safi.models.Transaction;
 import br.com.safi.services.interfaces.ICalcTax;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import java.util.List;
 @Service
 public class TaxService {
 
-    public void calcTax(List<Transaction> transactionList, ICalcTax calcTax) {
-        calcTax.calcTax(transactionList);
+    public List<DarfDto> calcTax(List<Transaction> transactionList, ICalcTax calcTax) {
+        return calcTax.calcTax(transactionList);
     }
 }

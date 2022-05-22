@@ -3,18 +3,18 @@ package br.com.safi.services;
 import br.com.safi.configuration.security.exception.dto.*;
 import br.com.safi.controller.dto.TransactionDto;
 import br.com.safi.controller.form.TransactionForm;
-import br.com.safi.models.Currency;
-import br.com.safi.models.Transaction;
-import br.com.safi.models.User;
+import br.com.safi.models.*;
 import br.com.safi.repository.ITransactionRespository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +35,7 @@ public class TransactionService {
             Currency currencies = this.getCurrency(transactionForm.getNameCurrency());
             Transaction transaction = transactionForm.converter(currencies, walletService, transactionStatusService);
             Transaction transactionSaved = transactionRespository.save(transaction);
-            walletCurrencyService.save(transaction, this);
+            walletCurrencyService.save(transaction, this, "ADD");
             return CompletableFuture.completedFuture(transactionSaved);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
@@ -54,15 +54,6 @@ public class TransactionService {
             return currencyService.save(currencyCreated);
         }
         return currencyExist;
-    }
-
-    public List<TransactionDto> getAll() throws GetDataException {
-        try {
-            return transactionRespository.findAll().stream().map(Transaction::converter).collect(Collectors.toList());
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), "stack", ex.getStackTrace(), "error", ex);
-            throw new GetDataException(ex.getMessage());
-        }
     }
 
     public List<Transaction> getTransactionByWalletId(Long id) throws GetDataException {
@@ -101,15 +92,53 @@ public class TransactionService {
         }
     }
 
-    public void deleteTransaction(Long transactionId, String userEmail) throws UnauthorizeException, UserNotFoundException {
+    public void deleteTransaction(Long transactionId, String userEmail) throws UnauthorizeException, UserNotFoundException, TransactionNotFoundException, GetDataException, ValidationException, DataBaseException {
         User user = userService.getUserByEmail(userEmail);
         Transaction transaction = transactionRespository.getTransactionById(transactionId).orElseThrow(() -> new TransactionNotFoundException(404, "Transação não encontrada"));
         if(transaction.getWallet().getUser().getId().equals(user.getId())) {
+            WalletCurrency walletCurrency = walletCurrencyService.getWalletCurrencyByWalletIdAndCurrencyId(transaction.getWallet().getId(), transaction.getCurrency().getId());
+            walletCurrencyService.updateTransactionAndWalletCurrency(transaction, "DELETE", walletCurrency, this);
             transactionRespository.deleteById(transactionId);
         } else {
             String errorMessage = String.format("Usuário %n não está autorizado a deletar a transação com o id %s", user.getEmail(), transaction.getId());
             log.error(errorMessage);
             throw new UnauthorizeException(403, errorMessage);
         }
+    }
+
+    public Transaction update(Long transactionId, TransactionForm transactionForm) throws Exception {
+        Transaction transaction = transactionRespository.getTransactionById(transactionId).orElseThrow(() -> new TransactionNotFoundException(404, "Transação não encontrada."));
+        Transaction transactionUpdated = updateFields(transaction, transactionForm);
+        WalletCurrency walletCurrency = walletCurrencyService.getWalletCurrencyByWalletIdAndCurrencyId(transactionUpdated.getWallet().getId(), transaction.getCurrency().getId());
+        walletCurrencyService.updateTransactionAndWalletCurrency(transaction, "UPDATE", walletCurrency, this);
+        return transactionRespository.save(transactionUpdated);
+    }
+
+    public Transaction getTransactionById(Long id) throws TransactionNotFoundException {
+        return transactionRespository.getTransactionById(id).orElseThrow(() -> new TransactionNotFoundException(404, "Transação não encontrada !"));
+    }
+
+    private Transaction updateFields(Transaction transaction, TransactionForm transactionDto) throws GetDataException, PersistDataException {
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        if(transactionDto.getTransactionDate() != null) {
+            LocalDate dateUpdated = LocalDate.parse(transactionDto.getTransactionDate());
+            transaction.setTransactionDate(dateUpdated);
+        }
+        if(transactionDto.getTransactionStatusId() != null) {
+            var transactionStatus = this.transactionStatusService.getById(transactionDto.getTransactionStatusId());
+            transaction.setTransactionStatus(transactionStatus);
+        }
+        if(transactionDto.getCurrencyQuantity() != null) {
+            transaction.setCurrencyQuantity(transactionDto.getCurrencyQuantity());
+        }
+        if(transactionDto.getAmountInvested() != null) {
+            transaction.setAmountInvested(transactionDto.getAmountInvested());
+        }
+        if(transactionDto.getNameCurrency() != null) {
+            Currency currency = this.getCurrency(transactionDto.getNameCurrency());
+            transaction.setCurrency(currency);
+        }
+        transaction.setUpdatedAt(now);
+        return transaction;
     }
 }

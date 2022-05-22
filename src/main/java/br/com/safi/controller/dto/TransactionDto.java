@@ -2,7 +2,6 @@ package br.com.safi.controller.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -10,11 +9,11 @@ public class TransactionDto {
 
     private Long id;
 
-    private Double currencyValue;
+    private Double amountInvested;
 
-    private LocalDateTime transactionDate;
+    private String transactionDate;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     private String nameCurrency;
 

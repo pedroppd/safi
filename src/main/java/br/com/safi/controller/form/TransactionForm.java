@@ -7,27 +7,36 @@ import br.com.safi.services.TransactionStatusService;
 import br.com.safi.services.WalletService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
+import org.springframework.beans.factory.annotation.Required;
+
+import javax.validation.Valid;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Null;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Slf4j
 @Data
 public class TransactionForm extends AbstractConverter<Transaction> {
 
     private Long transactionStatusId;
-    private LocalDateTime transactionDate;
+    private String transactionDate;
     @NotEmpty(message = "Input value is mandatory")
     private String nameCurrency;
-    private Double currencyValue;
+    private Double amountInvested;
     private Double currencyQuantity;
-    @NotEmpty(message = "WalletId is mandatory")
     private Long walletId;
 
-
-    public Transaction converter(Currency currency, WalletService walletService, TransactionStatusService transactionStatusService) throws DataBaseException, GetDataException {
+    public Transaction converter(Currency currency, WalletService walletService, TransactionStatusService transactionStatusService) throws DataBaseException, GetDataException, ParseException {
         Wallet wallet = walletService.getById(this.getWalletId());
         TransactionStatus transactionStatus = transactionStatusService.getById(this.getTransactionStatusId());
         if (wallet == null || transactionStatus == null) {
@@ -37,14 +46,22 @@ public class TransactionForm extends AbstractConverter<Transaction> {
         }
 
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        return Transaction.builder()
-                .createAt(now)
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = myFormat.parse(this.getTransactionDate());
+        var transactionDate = Instant.ofEpochMilli(date.getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        Transaction transactionBuilder = Transaction.builder()
                 .currencyQuantity(this.getCurrencyQuantity())
-                .transactionDate(this.getTransactionDate())
-                .currencyValue(this.getCurrencyValue())
+                .transactionDate(transactionDate)
+                .amountInvested(this.getAmountInvested())
                 .wallet(wallet)
                 .currency(currency)
                 .transactionStatus(transactionStatus)
+                .createAt(now)
                 .build();
+
+        return transactionBuilder;
     }
 }

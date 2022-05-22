@@ -11,7 +11,7 @@ public class AuthForm {
     private String email;
     private String password;
 
-    public UsernamePasswordAuthenticationToken converter(){
+    public UsernamePasswordAuthenticationToken converter() {
        return new UsernamePasswordAuthenticationToken(this.getEmail(), this.getPassword());
     }
 }

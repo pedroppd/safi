@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ITransactionStatusRepository extends JpaRepository<TransactionStatus, Long> {
     TransactionStatus getById(Long id);
+    TransactionStatus getByStatus(String status);
 }
