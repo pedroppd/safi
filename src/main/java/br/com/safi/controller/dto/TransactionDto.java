@@ -2,7 +2,6 @@ package br.com.safi.controller.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Builder
@@ -11,7 +10,7 @@ public class TransactionDto {
 
     private Long id;
 
-    private BigDecimal currencyValue;
+    private Double currencyValue;
 
     private LocalDateTime transactionDate;
 
@@ -19,7 +18,7 @@ public class TransactionDto {
 
     private String nameCurrency;
 
-    private BigDecimal currencyQuantity;
+    private Double currencyQuantity;
 
     private String transactionName;
 

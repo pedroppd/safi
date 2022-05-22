@@ -3,7 +3,6 @@ package br.com.safi.controller.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,9 +13,9 @@ public class WalletDto {
 
     private String name;
 
-    private BigDecimal totalValueTrade;
+    private Double totalValueTrade;
 
-    private BigDecimal tradeBalancing;
+    private Double tradeBalancing;
 
     private Long userId;
 
