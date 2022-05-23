@@ -42,14 +42,14 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{transactionId}")
-    public ResponseEntity<Void> getAllTransactionsByWalletId(@PathVariable Long transactionId, HttpServletRequest request) throws UnauthorizeException, UserNotFoundException, TransactionNotFoundException, ValidationException, GetDataException, DataBaseException {
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long transactionId, HttpServletRequest request) throws UnauthorizeException, UserNotFoundException, TransactionNotFoundException, ValidationException, GetDataException, DataBaseException {
         String userEmail = request.getRemoteUser();
         transactionService.deleteTransaction(transactionId, userEmail);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{transactionId}")
-    public ResponseEntity<Transaction> getAllTransactionsByWalletId(@RequestBody TransactionForm transactionForm, @PathVariable Long transactionId, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Transaction> updateTransaction(@RequestBody TransactionForm transactionForm, @PathVariable Long transactionId, HttpServletRequest request) throws Exception {
         Transaction transaction = transactionService.update(transactionId, transactionForm);
         return ResponseEntity.ok().body(transaction);
     }
