@@ -14,7 +14,7 @@ public interface ITransactionRespository extends JpaRepository<Transaction, Long
 
     Transaction save(Transaction transaction);
 
-    List<Transaction> getTransactionByWalletId(Long id);
+    List<Transaction> getTransactionByWalletIdOrderByTransactionDateDesc(Long id);
 
     List<Transaction> getTransactionByTransactionStatus_IdAndCurrency_Id(Long TransactionStatusId, Long CurrencyId);
 

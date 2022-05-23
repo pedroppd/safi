@@ -58,7 +58,7 @@ public class TransactionService {
 
     public List<Transaction> getTransactionByWalletId(Long id) throws GetDataException {
         try {
-            return transactionRespository.getTransactionByWalletId(id);
+            return transactionRespository.getTransactionByWalletIdOrderByTransactionDateDesc(id);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new GetDataException(ex.getMessage());
