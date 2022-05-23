@@ -24,8 +24,8 @@ public class TaxController {
 
     @GetMapping("/{walletId}/wallet/{year}/year")
     public ResponseEntity<List<DarfDto>> calcTax(@PathVariable(value = "walletId") Long walletId, @PathVariable(value = "year") int year) throws GetDataException {
-        List<Transaction> transactionList = transactionService.getTransactionByWalletIdAndYear(walletId, year);
-        List<DarfDto> taxResult = taxService.calcTax(transactionList, new DarfCalculator());
+        List<Transaction> transactionList = transactionService.getTransactionByWalletIdAndYear(walletId);
+        List<DarfDto> taxResult = taxService.calcTax(transactionList, year, new DarfCalculator());
         return ResponseEntity.ok().body(taxResult);
     }
 }

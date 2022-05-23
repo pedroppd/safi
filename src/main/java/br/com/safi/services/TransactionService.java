@@ -65,9 +65,9 @@ public class TransactionService {
         }
     }
 
-    public List<Transaction> getTransactionByWalletIdAndYear(Long walletId, int year) throws GetDataException {
+    public List<Transaction> getTransactionByWalletIdAndYear(Long walletId) throws GetDataException {
         try {
-            return transactionRespository.getTransactionByWalletIdAndYear(walletId, year);
+            return transactionRespository.getTransactionByWalletId(walletId);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new GetDataException(ex.getMessage());

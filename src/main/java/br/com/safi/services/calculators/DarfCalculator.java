@@ -2,7 +2,13 @@ package br.com.safi.services.calculators;
 
 import br.com.safi.controller.dto.DarfDto;
 import br.com.safi.models.Transaction;
+
+import br.com.safi.services.WalletCurrencyService;
 import br.com.safi.services.interfaces.ICalcTax;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -15,12 +21,48 @@ public class DarfCalculator implements ICalcTax {
     private static final int TAX_VALUE = 35000;
     private static final double PERCENT_TAX = 0.15;
 
+    @Autowired
+    private WalletCurrencyService walletCurrencyService;
+
     @Override
-    public List<DarfDto> calcTax(List<Transaction> transactionList) {
+    public List<DarfDto> calcTax(List<Transaction> transactionList, int year) {
         List<DarfDto> darfs = new ArrayList<>();
+        var listaTransacaoAnoAtual = transactionList.stream().filter(x -> x.getTransactionDate().getYear() == year).collect(Collectors.toList());
+        List<CurrencyHistory> currencyHistoriesList = new ArrayList<>();
+        transactionList.removeAll(listaTransacaoAnoAtual);
+        var transacoesAnteriores = transactionList
+                .stream()
+                .collect(Collectors.groupingBy(Transaction::getCurrency)).entrySet();
+
+        for (var transactionMap : transacoesAnteriores) {
+            Double currentQuantity = 0.0;
+            Double currentValueTotal = 0.0;
+            for (Transaction transaction : transactionMap.getValue()) {
+                if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
+                    currentQuantity += transaction.getCurrencyQuantity();
+                    currentValueTotal += transaction.getAmountInvested();
+                } else {
+                    if (currentQuantity >= transaction.getCurrencyQuantity()) {
+                        currentValueTotal -= (transaction.getCurrencyQuantity() / currentQuantity) * currentValueTotal;
+                        currentQuantity -= transaction.getCurrencyQuantity();
+                    } else {
+                        throw new IllegalArgumentException("Valor maior do que o disponível para venda. ID:" +
+                                transaction.getId() + ", DATA: "
+                                + transaction.getTransactionDate() + ", MOEDA: "
+                                + transaction.getCurrency().getName() + ", VALOR: "
+                                + transaction.getAmountInvested() + ", QUANTIDADE: "
+                                + transaction.getCurrencyQuantity());
+                    }
+                }
+            }
+
+            currencyHistoriesList.add(new CurrencyHistory(transactionMap.getKey().getName(), currentQuantity, currentValueTotal));
+        }
+
         for (int month = 0; month < MONTHS.size(); month++) {
             int monthValue = month + 1;
-            List<Transaction> monthTransaction = transactionList
+
+            List<Transaction> monthTransaction = listaTransacaoAnoAtual
                     .stream()
                     .filter(x -> x.getTransactionDate()
                             .getMonthValue() == monthValue).collect(Collectors.toList());
@@ -35,21 +77,25 @@ public class DarfCalculator implements ICalcTax {
             boolean hasDebit = false;
             for (var mapTransactions : mapTransactionList) {
                 var transactions = mapTransactions.getValue();
-                Double currentQuantity = 0.0;
-                Double currentValueTotal = 0.0;
+                double currentValueTotal = 0.0;
                 for (Transaction transaction : transactions) {
-                    if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
-                        currentQuantity += transaction.getCurrencyQuantity();
-                        currentValueTotal += transaction.getAmountInvested();
-                        volBuy += transaction.getAmountInvested();
-                    } else {
-                        if (currentQuantity >= transaction.getCurrencyQuantity()) {
-                            balancer += transaction.getAmountInvested() - ((transaction.getCurrencyQuantity() / currentQuantity) * currentValueTotal);
-                            currentValueTotal -= (transaction.getCurrencyQuantity() / currentQuantity) * currentValueTotal;
-                            currentQuantity -= transaction.getCurrencyQuantity();
-                            volSell += transaction.getAmountInvested();
+                    var currencyHistory = currencyHistoriesList
+                            .stream().filter(x -> x.getName().equals(transaction.getCurrency().getName())).findFirst().orElse(null);
+
+                    if (currencyHistory != null) {
+                        if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
+                            currencyHistory.setQuantity(currencyHistory.getQuantity() + transaction.getCurrencyQuantity());
+                            currencyHistory.setInvestedValue(currencyHistory.getInvestedValue() + transaction.getAmountInvested());
+                            volBuy += transaction.getAmountInvested();
                         } else {
-                            throw new IllegalArgumentException("Valor maior do que o disponível para venda.");
+                            if (currencyHistory.getQuantity() >= transaction.getCurrencyQuantity()) {
+                                balancer += transaction.getAmountInvested() - ((transaction.getCurrencyQuantity() / currencyHistory.getQuantity()) * currentValueTotal);
+                                currencyHistory.setInvestedValue(currencyHistory.getInvestedValue() - (transaction.getCurrencyQuantity() / currencyHistory.getQuantity()) * currentValueTotal);
+                                currencyHistory.setQuantity(currencyHistory.getQuantity() - transaction.getCurrencyQuantity());
+                                volSell += transaction.getAmountInvested();
+                            } else {
+                                throw new IllegalArgumentException("Valor maior do que o disponível para venda.");
+                            }
                         }
                     }
                 }
