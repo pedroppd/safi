@@ -27,9 +27,9 @@ public class CurrencyService {
         }
     }
 
-    public Currency getById(Long id) throws GetDataException {
+    public List<String> getById(Long walletId) throws GetDataException {
         try {
-            return currencyRepository.getById(id);
+            return currencyRepository.getByWalletId(walletId);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
             throw new GetDataException(ex.getMessage());

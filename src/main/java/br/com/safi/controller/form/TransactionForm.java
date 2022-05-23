@@ -52,7 +52,7 @@ public class TransactionForm extends AbstractConverter<Transaction> {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        Transaction transactionBuilder = Transaction.builder()
+        return Transaction.builder()
                 .currencyQuantity(this.getCurrencyQuantity())
                 .transactionDate(transactionDate)
                 .amountInvested(this.getAmountInvested())
@@ -61,7 +61,5 @@ public class TransactionForm extends AbstractConverter<Transaction> {
                 .transactionStatus(transactionStatus)
                 .createAt(now)
                 .build();
-
-        return transactionBuilder;
     }
 }

@@ -19,7 +19,6 @@ import java.util.Objects;
 @AllArgsConstructor
 public class WalletCurrency {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

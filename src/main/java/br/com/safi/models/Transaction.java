@@ -29,9 +29,8 @@ public class Transaction {
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    @Column(name = "currency_value")
+    @Column(name = "amount_invested")
     private Double amountInvested;
-    ;
 
     @Column(name = "currency_quantity")
     private Double currencyQuantity;
