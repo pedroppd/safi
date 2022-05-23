@@ -7,10 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Entity
 @Table(name = "Transactions")
@@ -26,24 +28,24 @@ public class Transaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "wallet_id")
+    @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
-    @Column(name = "amount_invested")
+    @Column(name = "amount_invested", nullable = false)
     private Double amountInvested;
 
-    @Column(name = "currency_quantity")
+    @Column(name = "currency_quantity", nullable = false)
     private Double currencyQuantity;
 
     @OneToOne
-    @JoinColumn(name = "currency_id")
+    @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
 
     @ManyToOne
-    @JoinColumn(name = "transactionStatus_id")
+    @JoinColumn(name = "transactionStatus_id", nullable = false)
     private TransactionStatus transactionStatus;
 
-    @Column(name = "transaction_date")
+    @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
 
     @Column(name = "created_at")
@@ -59,11 +61,11 @@ public class Transaction {
     }
 
     public TransactionDto converter() {
-        LocalDateTime now = this.getCreateAt().truncatedTo(ChronoUnit.SECONDS);
+        String date = this.getTransactionDate().toString();
         return TransactionDto.builder()
                 .id(this.getId())
                 .createdAt(this.getCreateAt().toString())
-                .transactionDate(now.toString())
+                .transactionDate(date)
                 .walletId(this.getWallet().getId())
                 .nameCurrency(this.getCurrency().getName())
                 .amountInvested(this.getAmountInvested())

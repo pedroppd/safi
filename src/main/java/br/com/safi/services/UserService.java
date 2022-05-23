@@ -34,7 +34,7 @@ public class UserService {
             log.debug("Verifying if user exist...");
             User userExist = this.getUserByEmail(user.getEmail());
             if (userExist != null) {
-                String errorMessage = "User with email " + userExist.getEmail() + " already exists !!";
+                String errorMessage = "Já existe um usuário cadastrado com esse email " + userExist.getEmail() + "!!";
                 log.error(errorMessage);
                 throw new ValidationException(errorMessage);
             }
@@ -51,8 +51,8 @@ public class UserService {
         }
     }
 
-    User getUserByEmail(String email) throws UserNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(404, "Usuário não encontrado"));
+    User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public boolean verify(String verificationCode) {

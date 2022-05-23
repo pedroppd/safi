@@ -3,8 +3,6 @@ package br.com.safi.controller.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 public class DarfDto {

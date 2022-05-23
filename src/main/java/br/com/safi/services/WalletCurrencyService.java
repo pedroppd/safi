@@ -54,8 +54,11 @@ public class WalletCurrencyService {
         } else if (DELETE.equals(mode)) {
             if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
                 walletCurrency.setQuantity(walletCurrency.getQuantity() - transaction.getCurrencyQuantity());
-                calcAveragePrice(walletCurrency, transaction, transactionService, true);
-
+                if(walletCurrency.getQuantity() == 0) {
+                    walletCurrencyRepository.deleteById(walletCurrency.getId());
+                } else {
+                    calcAveragePrice(walletCurrency, transaction, transactionService, true);
+                }
             } else {
                 walletCurrency.setQuantity(walletCurrency.getQuantity() + transaction.getCurrencyQuantity());
             }
@@ -83,7 +86,6 @@ public class WalletCurrencyService {
         }
     }
 
-    @Transactional
     public WalletCurrency getWalletCurrencyByWalletIdAndCurrencyId(Long walletId, Long currencyId) throws GetDataException {
         try {
             return walletCurrencyRepository.getWalletCurrencyByWallet_IdAndCurrency_Id(walletId, currencyId);
@@ -144,12 +146,18 @@ public class WalletCurrencyService {
         //BigDecimal quantity = transactionList.stream().map(Transaction::getCurrencyQuantity).reduce(BigDecimal::add).get();
 
         Double quantity = walletCurrency.getQuantity();
-        Double currencyTotalPrice = transactionList
+        var currencyTotalPrice = transactionList
                 .stream()
-                .map((x) -> x.getCurrencyQuantity() * (x.getAmountInvested() / x.getCurrencyQuantity())).reduce(Double::sum).get();
+                .map((x) -> x.getCurrencyQuantity() * (x.getAmountInvested() / x.getCurrencyQuantity())).reduce(Double::sum);
 
-        Double rest = currencyTotalPrice / quantity;
-        walletCurrency.setAveragePrice(rest);
-        walletCurrencyRepository.save(walletCurrency);
+        if(currencyTotalPrice.isPresent() && currencyTotalPrice.get() > 0 && quantity > 0) {
+            Double rest = currencyTotalPrice.get() / quantity;
+            System.out.println("REST:" + rest);
+            walletCurrency.setAveragePrice(rest);
+            walletCurrencyRepository.save(walletCurrency);
+        } else {
+            var valueTotal = currencyTotalPrice.isPresent() ? currencyTotalPrice.get() : 0;
+            log.info("O cálculo do preço médio não foi realizado por que o valor total dos preços é igual a " +valueTotal+" e a quantidade é igual a " + quantity);
+        }
     }
 }

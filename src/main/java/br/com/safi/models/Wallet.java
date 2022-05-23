@@ -19,7 +19,6 @@ import java.util.List;
 @Table(name = "Wallets")
 @Getter
 @Setter
-@ToString
 public class Wallet extends AbstractConverter<WalletDto> {
 
     public Wallet(User user, String name) {
@@ -41,8 +40,10 @@ public class Wallet extends AbstractConverter<WalletDto> {
     @Column(unique = true)
     private String name;
 
+    @Column(nullable = false)
     private Double totalVolumeTrade;
 
+    @Column(nullable = false)
     private Double tradingBalance;
 
     @Column(name = "created_at")
@@ -50,7 +51,7 @@ public class Wallet extends AbstractConverter<WalletDto> {
     private LocalDateTime createAt;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "wallet")
@@ -72,5 +73,17 @@ public class Wallet extends AbstractConverter<WalletDto> {
                 .totalValueTrade(this.getTotalVolumeTrade())
                 .tradeBalancing(this.getTradingBalance())
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "Wallet{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", totalVolumeTrade=" + totalVolumeTrade +
+                ", tradingBalance=" + tradingBalance +
+                ", createAt=" + createAt +
+                ", user=" + user +
+                '}';
     }
 }

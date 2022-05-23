@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.Collection;
 
 @Entity
@@ -18,13 +19,18 @@ public class User extends AbstractConverter<UserDto> implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String firstName;
 
+    @Column(nullable = false)
     private String lastName;
 
+    @Email(message = "email inválido !!")
+    @Column(nullable = false)
     private String email;
 
     @JsonIgnore
+    @Column(nullable = false)
     private String password;
 
     @Column(length = 65, updatable = false)

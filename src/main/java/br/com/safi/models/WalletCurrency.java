@@ -5,19 +5,17 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "wallet_currency")
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
 @Builder
 @AllArgsConstructor
-public class WalletCurrency {
+public class WalletCurrency implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,31 +23,37 @@ public class WalletCurrency {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "wallet_id")
+    @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "currency_id")
+    @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
 
+    @Column(nullable = false)
     private Double quantity;
 
+    @Column(nullable = false)
     private Double averagePrice;
 
     private LocalDateTime createAt;
 
     private LocalDateTime updatedAt;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        WalletCurrency that = (WalletCurrency) o;
-        return id != null && Objects.equals(id, that.id);
+    public WalletCurrency() {
+
     }
 
     @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    public String toString() {
+        return "WalletCurrency{" +
+                "id=" + id +
+                ", wallet=" + "" +
+                ", currency=" + currency +
+                ", quantity=" + quantity +
+                ", averagePrice=" + averagePrice +
+                ", createAt=" + createAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

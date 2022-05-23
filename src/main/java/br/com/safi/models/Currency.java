@@ -1,5 +1,6 @@
 package br.com.safi.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,12 +17,8 @@ public class Currency {
     private Long id;
 
     @NonNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
-
-    @Column
-    @OneToMany(mappedBy = "currency")
-    private List<WalletCurrency> walletCurrency;
 
     public Currency(String name) {
         this.name = name;

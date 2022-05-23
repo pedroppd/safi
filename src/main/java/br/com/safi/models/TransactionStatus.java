@@ -15,6 +15,6 @@ public class TransactionStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private String status;
 }

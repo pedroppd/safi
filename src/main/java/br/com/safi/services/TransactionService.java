@@ -94,9 +94,13 @@ public class TransactionService {
 
     public void deleteTransaction(Long transactionId, String userEmail) throws UnauthorizeException, UserNotFoundException, TransactionNotFoundException, GetDataException, ValidationException, DataBaseException {
         User user = userService.getUserByEmail(userEmail);
+        if(user == null) {
+            throw new UserNotFoundException(404, "Usuário não existe !!!");
+        }
         Transaction transaction = transactionRespository.getTransactionById(transactionId).orElseThrow(() -> new TransactionNotFoundException(404, "Transação não encontrada"));
         if(transaction.getWallet().getUser().getId().equals(user.getId())) {
             WalletCurrency walletCurrency = walletCurrencyService.getWalletCurrencyByWalletIdAndCurrencyId(transaction.getWallet().getId(), transaction.getCurrency().getId());
+            System.out.println("walletCurrency" + walletCurrency);
             walletCurrencyService.updateTransactionAndWalletCurrency(transaction, "DELETE", walletCurrency, this);
             transactionRespository.deleteById(transactionId);
         } else {
