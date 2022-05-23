@@ -13,4 +13,9 @@ public class CurrencyHistory {
         this.name = name;
         this.investedValue = currentValueTotal;
     }
+
+    public CurrencyHistory() {
+        this.quantity = 0.0;
+        this.investedValue = 0.0;
+    }
 }

@@ -35,16 +35,16 @@ public class DarfCalculator implements ICalcTax {
                 .collect(Collectors.groupingBy(Transaction::getCurrency)).entrySet();
 
         for (var transactionMap : transacoesAnteriores) {
-            Double currentQuantity = 0.0;
-            Double currentValueTotal = 0.0;
+            CurrencyHistory currencyHistory = new CurrencyHistory();
             for (Transaction transaction : transactionMap.getValue()) {
                 if (BUY.equals(transaction.getTransactionStatus().getStatus())) {
-                    currentQuantity += transaction.getCurrencyQuantity();
-                    currentValueTotal += transaction.getAmountInvested();
+                    currencyHistory.setQuantity(currencyHistory.getQuantity()+ transaction.getCurrencyQuantity());
+                    currencyHistory.setInvestedValue(currencyHistory.getInvestedValue() + transaction.getAmountInvested());
                 } else {
-                    if (currentQuantity >= transaction.getCurrencyQuantity()) {
-                        currentValueTotal -= (transaction.getCurrencyQuantity() / currentQuantity) * currentValueTotal;
-                        currentQuantity -= transaction.getCurrencyQuantity();
+                    if (currencyHistory.getQuantity() >= transaction.getCurrencyQuantity()) {
+                        //currentValueTotal -= (transaction.getCurrencyQuantity() / currentQuantity) * currentValueTotal;
+                        currencyHistory.setQuantity(currencyHistory.getQuantity()-transaction.getCurrencyQuantity());
+                        currencyHistory.setInvestedValue(currencyHistory.getInvestedValue() - (transaction.getCurrencyQuantity() / currencyHistory.getQuantity()) * currencyHistory.getInvestedValue());
                     } else {
                         throw new IllegalArgumentException("Valor maior do que o disponível para venda. ID:" +
                                 transaction.getId() + ", DATA: "
@@ -55,8 +55,8 @@ public class DarfCalculator implements ICalcTax {
                     }
                 }
             }
-
-            currencyHistoriesList.add(new CurrencyHistory(transactionMap.getKey().getName(), currentQuantity, currentValueTotal));
+            currencyHistory.setName(transactionMap.getKey().getName());
+            currencyHistoriesList.add(currencyHistory);
         }
 
         for (int month = 0; month < MONTHS.size(); month++) {
