@@ -23,7 +23,7 @@ public class CurrencyService {
             return currencyRepository.save(currency);
         } catch (Exception ex) {
             log.error(ex.getMessage(), "stack", ex.getStackTrace());
-            throw new PersistDataException(ex.getMessage());
+            throw new PersistDataException(500, ex.getMessage());
         }
     }
 

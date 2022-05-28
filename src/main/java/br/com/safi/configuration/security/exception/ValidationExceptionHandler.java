@@ -19,11 +19,8 @@ import java.util.List;
 
 @RestControllerAdvice
 public class ValidationExceptionHandler {
-
-
     @Autowired
     private MessageSource messageSource;
-
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public List<MethodArgumentNotValidExceptionDto> handler(MethodArgumentNotValidException exception) {
@@ -66,7 +63,7 @@ public class ValidationExceptionHandler {
 
     @ExceptionHandler(PersistDataException.class)
     public ResponseEntity<ErrorDto> handler(PersistDataException exception) {
-        return ResponseEntity.internalServerError().body(new ErrorDto(500, exception.getMessage()));
+        return ResponseEntity.internalServerError().body(new ErrorDto(exception.getCode(), exception.getMessage()));
     }
 
     @ExceptionHandler(GetDataException.class)

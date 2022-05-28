@@ -1,9 +1,11 @@
 package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
+import br.com.safi.configuration.security.exception.dto.PersistDataException;
 import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.User;
 import br.com.safi.repository.IUserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class UserService {
-
-    @Autowired
-    private IUserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private MailService mailSender;
-
+    private final IUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MailService mailSender;
 
     @Async
     public CompletableFuture<User> register(String tid, User user) throws DataBaseException {
@@ -50,7 +46,7 @@ public class UserService {
         }
     }
 
-    User getUserByEmail(String email) {
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
@@ -66,7 +62,7 @@ public class UserService {
         }
     }
 
-    private void encodePassword(User user) {
+    public void encodePassword(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
@@ -74,7 +70,19 @@ public class UserService {
         return this.userRepository.findById(userUd).orElse(null);
     }
 
+    public User getUserByVerificationCode(String verificationCode) {
+        return this.userRepository.findByVerificationCode(verificationCode).orElse(null);
+    }
+
     public void deleteUserById(long id) {
         this.userRepository.deleteById(id);
+    }
+
+    public void updateUser(User user) throws PersistDataException {
+        try {
+            userRepository.save(user);
+        } catch (Exception ex) {
+            throw new PersistDataException(500, ex.getMessage());
+        }
     }
 }

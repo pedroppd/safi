@@ -5,8 +5,9 @@ import lombok.Setter;
 
 @Getter @Setter
 public class PersistDataException extends Exception {
-
-    public PersistDataException(String message) {
+    private int code;
+    public PersistDataException(int code, String message) {
         super(message);
+        this.code = code;
     }
 }
