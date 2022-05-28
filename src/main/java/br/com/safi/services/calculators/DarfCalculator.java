@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -20,9 +21,6 @@ public class DarfCalculator implements ICalcTax {
     private static final List<String> MONTHS = List.of("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
     private static final int TAX_VALUE = 35000;
     private static final double PERCENT_TAX = 0.15;
-
-    @Autowired
-    private WalletCurrencyService walletCurrencyService;
 
     @Override
     public List<DarfDto> calcTax(List<Transaction> transactionList, int year) {
@@ -109,14 +107,15 @@ public class DarfCalculator implements ICalcTax {
                     }
                 }
             }
+
             var debitValue = 0.0;
             if (volSell >= TAX_VALUE && balancer > 0) {
                 hasDebit = true;
                 debitValue = balancer * PERCENT_TAX;
             }
-            String expirationDate = LocalDateTime.now().plusMonths(1).truncatedTo(ChronoUnit.SECONDS).toString();
+            var expirationDate = LocalDateTime.of(year, monthValue, LocalDateTime.now().getDayOfMonth(),0,0).plusMonths(1);
             darfs.add(DarfDto.builder()
-                    .dataExpiracao(expirationDate)
+                    .dataExpiracao(expirationDate.toLocalDate().toString())
                     .valorDebito(debitValue)
                     .volumeCompra(volBuy)
                     .volumeVenda(volSell)

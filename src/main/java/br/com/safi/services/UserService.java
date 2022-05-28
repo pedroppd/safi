@@ -1,7 +1,6 @@
 package br.com.safi.services;
 
 import br.com.safi.configuration.security.exception.dto.DataBaseException;
-import br.com.safi.configuration.security.exception.dto.UserNotFoundException;
 import br.com.safi.configuration.security.exception.dto.ValidationException;
 import br.com.safi.models.User;
 import br.com.safi.repository.IUserRepository;

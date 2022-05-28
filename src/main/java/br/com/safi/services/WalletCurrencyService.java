@@ -33,7 +33,7 @@ public class WalletCurrencyService {
         WalletCurrency walletCurrency = this.getWalletCurrencyByWalletIdAndCurrencyId(transaction.getWallet().getId(), transaction.getCurrency().getId());
         if (walletCurrency == null && SELL.equals(transaction.getTransactionStatus().getStatus())) {
             transactionService.deleteById(transaction.getId());
-            String errorMessage = String.format("User %s does not have crypto %s in order to carry out a sale operation.", transaction.getWallet().getUser().getFirstName(), transaction.getCurrency().getName());
+            String errorMessage = String.format("Usuário %s não possui cripto %s para realizar uma operação de venda.", transaction.getWallet().getUser().getFirstName(), transaction.getCurrency().getName());
             log.error(errorMessage);
             throw new ValidationException(errorMessage);
         }

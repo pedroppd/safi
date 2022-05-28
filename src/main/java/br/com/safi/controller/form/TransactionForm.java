@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -28,12 +29,16 @@ import java.util.Date;
 @Data
 public class TransactionForm extends AbstractConverter<Transaction> {
 
+    @NotNull(message = "Status da transação é obrigatório")
     private Long transactionStatusId;
+    @NotEmpty(message = "Data de transação é obrigatória")
     private String transactionDate;
-    @NotEmpty(message = "Input value is mandatory")
+    @NotEmpty(message = "Nome da moeda é obrigatório")
     private String nameCurrency;
     private Double amountInvested;
+    @NotNull(message = "Quantidade da moeda é obrigatório")
     private Double currencyQuantity;
+    @NotNull(message = "Id da carteira é obrigatório")
     private Long walletId;
 
     public Transaction converter(Currency currency, WalletService walletService, TransactionStatusService transactionStatusService) throws DataBaseException, GetDataException, ParseException {
